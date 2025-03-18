@@ -1,0 +1,28 @@
+{
+  "project_info": {
+    "project_number": "365868890310",
+    "project_id": "plataformaxarxes",
+    "storage_bucket": "plataformaxarxes.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:365868890310:android:3030147c08813e33ee7fc7",
+        "android_client_info": {
+"package_name": "com.example.navalbattle"        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDe9uj3ukvqrisRLOoI_96vuBhD1l-cc_I"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
