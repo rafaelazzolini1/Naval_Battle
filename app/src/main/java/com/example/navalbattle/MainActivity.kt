@@ -8,12 +8,15 @@ import android.hardware.SensorManager
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.activity.viewModels
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -23,7 +26,9 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.navigation.compose.NavHost
@@ -33,14 +38,16 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.example.navalbattle.ui.theme.NavalBattleTheme
 import kotlinx.coroutines.launch
-import androidx.compose.foundation.rememberScrollState
-import androidx.compose.ui.res.painterResource
 
 class MainActivity : ComponentActivity() {
     private lateinit var auth: FirebaseAuth
     private lateinit var db: FirebaseFirestore
     private lateinit var sensorManager: SensorManager
     private var lightSensor: Sensor? = null
+
+    // Inicializa os ViewModels
+    private val loginViewModel: LoginViewModel by viewModels()
+    private val gameViewModel: GameViewModel by viewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -106,8 +113,8 @@ class MainActivity : ComponentActivity() {
 
                         // Configura a navegação
                         NavHost(navController = navController, startDestination = "login") {
-                            composable("login") { LoginScreen(auth, navController, isLightTheme) }
-                            composable("game") { GameScreen(isLightTheme) }
+                            composable("login") { LoginScreen(auth, navController, isLightTheme, loginViewModel) }
+                            composable("game") { GameScreen(isLightTheme, gameViewModel, navController) }
                         }
                     }
                 }
@@ -126,12 +133,9 @@ class MainActivity : ComponentActivity() {
 }
 
 @Composable
-fun LoginScreen(auth: FirebaseAuth, navController: androidx.navigation.NavController, isLightTheme: Boolean) {
-    var email by remember { mutableStateOf("") }
-    var password by remember { mutableStateOf("") }
-    var emailError by remember { mutableStateOf(false) }
-    var passwordError by remember { mutableStateOf(false) }
-    var errorMessage by remember { mutableStateOf<String?>(null) }
+fun LoginScreen(auth: FirebaseAuth, navController: androidx.navigation.NavController, isLightTheme: Boolean, viewModel: LoginViewModel) {
+    // Estado para controlar a rolagem
+    val scrollState = rememberScrollState()
 
     // Fundo com gradiente (claro ou escuro)
     Column(
@@ -143,31 +147,34 @@ fun LoginScreen(auth: FirebaseAuth, navController: androidx.navigation.NavContro
                     else listOf(Color(0xFF003087), Color(0xFF4FC3F7))
                 )
             )
-            .padding(24.dp),
+            .padding(24.dp)
+            .verticalScroll(scrollState),
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         // Imagem acima do campo de email
         Image(
-            painter = painterResource(id = R.drawable.intro), // Substitua "email_logo" pelo nome do seu recurso
+            painter = painterResource(id = R.drawable.intro),
             contentDescription = "Email Logo",
             modifier = Modifier
-                .size(128.dp) // Tamanho da imagem (ajuste conforme necessário)
-                .padding(bottom = 32.dp) // Espaçamento entre a imagem e o campo de email
+                .size(128.dp)
+                .padding(bottom = 32.dp)
         )
+
         // Campo de email
         OutlinedTextField(
-            value = email,
+            value = viewModel.email.value,
             onValueChange = {
-                email = it
-                emailError = it.isEmpty()
+                viewModel.email.value = it
+                viewModel.emailError.value = it.isEmpty()
             },
             label = { Text("Enter your email", color = if (isLightTheme) Color.Black else Color.White) },
-            isError = emailError,
+            isError = viewModel.emailError.value,
             modifier = Modifier
                 .fillMaxWidth()
                 .clip(RoundedCornerShape(12.dp)),
             textStyle = TextStyle(color = if (isLightTheme) Color.Black else Color.White),
+            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email),
             colors = OutlinedTextFieldDefaults.colors(
                 focusedBorderColor = if (isLightTheme) Color(0xFF90A4AE) else Color(0xFF4FC3F7),
                 unfocusedBorderColor = if (isLightTheme) Color(0xFFB0BEC5) else Color.White.copy(alpha = 0.5f),
@@ -181,14 +188,14 @@ fun LoginScreen(auth: FirebaseAuth, navController: androidx.navigation.NavContro
 
         // Campo de senha
         OutlinedTextField(
-            value = password,
+            value = viewModel.password.value,
             onValueChange = {
-                password = it
-                passwordError = it.isEmpty()
+                viewModel.password.value = it
+                viewModel.passwordError.value = it.isEmpty()
             },
             label = { Text("Enter your password", color = if (isLightTheme) Color.Black else Color.White) },
             visualTransformation = PasswordVisualTransformation(),
-            isError = passwordError,
+            isError = viewModel.passwordError.value,
             modifier = Modifier
                 .fillMaxWidth()
                 .clip(RoundedCornerShape(12.dp)),
@@ -207,19 +214,22 @@ fun LoginScreen(auth: FirebaseAuth, navController: androidx.navigation.NavContro
         // Botão de login
         Button(
             onClick = {
-                emailError = email.isEmpty()
-                passwordError = password.isEmpty()
-                if (!emailError && !passwordError) {
-                    auth.signInWithEmailAndPassword(email, password)
+                viewModel.emailError.value = viewModel.email.value.isEmpty()
+                viewModel.passwordError.value = viewModel.password.value.isEmpty()
+                if (!viewModel.emailError.value && !viewModel.passwordError.value) {
+                    auth.signInWithEmailAndPassword(viewModel.email.value, viewModel.password.value)
                         .addOnCompleteListener { task ->
                             if (task.isSuccessful) {
-                                navController.navigate("game")
+                                viewModel.clearUserData() // Limpa os dados do usuário
+                                navController.navigate("game") {
+                                    popUpTo("login") { inclusive = true }
+                                }
                             } else {
-                                errorMessage = task.exception?.message
+                                viewModel.errorMessage.value = task.exception?.message
                             }
                         }
                 } else {
-                    errorMessage = "Please fill in all fields!"
+                    viewModel.errorMessage.value = "Please fill in all fields!"
                 }
             },
             modifier = Modifier
@@ -239,19 +249,19 @@ fun LoginScreen(auth: FirebaseAuth, navController: androidx.navigation.NavContro
         // Botão de registro
         Button(
             onClick = {
-                emailError = email.isEmpty()
-                passwordError = password.isEmpty()
-                if (!emailError && !passwordError) {
-                    auth.createUserWithEmailAndPassword(email, password)
+                viewModel.emailError.value = viewModel.email.value.isEmpty()
+                viewModel.passwordError.value = viewModel.password.value.isEmpty()
+                if (!viewModel.emailError.value && !viewModel.passwordError.value) {
+                    auth.createUserWithEmailAndPassword(viewModel.email.value, viewModel.password.value)
                         .addOnCompleteListener { task ->
                             if (task.isSuccessful) {
-                                errorMessage = "User registered successfully!"
+                                viewModel.errorMessage.value = "User registered successfully!"
                             } else {
-                                errorMessage = task.exception?.message
+                                viewModel.errorMessage.value = task.exception?.message
                             }
                         }
                 } else {
-                    errorMessage = "Please fill in all fields!"
+                    viewModel.errorMessage.value = "Please fill in all fields!"
                 }
             },
             modifier = Modifier
@@ -267,7 +277,7 @@ fun LoginScreen(auth: FirebaseAuth, navController: androidx.navigation.NavContro
         }
 
         // Mensagem de erro ou sucesso
-        errorMessage?.let {
+        viewModel.errorMessage.value?.let {
             Spacer(modifier = Modifier.height(16.dp))
             Text(
                 text = it,
@@ -276,12 +286,13 @@ fun LoginScreen(auth: FirebaseAuth, navController: androidx.navigation.NavContro
                 modifier = Modifier.padding(horizontal = 16.dp)
             )
         }
+
+        Spacer(modifier = Modifier.height(100.dp))
     }
 }
 
 @Composable
-fun GameScreen(isLightTheme: Boolean) {
-    var gameState by remember { mutableStateOf(GameState()) }
+fun GameScreen(isLightTheme: Boolean, viewModel: GameViewModel, navController: androidx.navigation.NavController) {
     val db = FirebaseFirestore.getInstance()
     val userEmail = FirebaseAuth.getInstance().currentUser?.email ?: "Unknown User"
     val scaffoldState = remember { SnackbarHostState() }
@@ -294,26 +305,26 @@ fun GameScreen(isLightTheme: Boolean) {
     val scrollState = rememberScrollState()
 
     // Pontuação do jogador e da IA
-    val playerScore by remember(gameState.moves) {
-        mutableStateOf(gameState.moves.count { it.result == CellState.HIT && it.isPlayerMove })
+    val playerScore by remember(viewModel.gameState.value.moves) {
+        mutableStateOf(viewModel.gameState.value.moves.count { it.result == CellState.HIT && it.isPlayerMove })
     }
-    val aiScore by remember(gameState.moves) {
-        mutableStateOf(gameState.moves.count { it.result == CellState.HIT && !it.isPlayerMove })
+    val aiScore by remember(viewModel.gameState.value.moves) {
+        mutableStateOf(viewModel.gameState.value.moves.count { it.result == CellState.HIT && !it.isPlayerMove })
     }
 
     // Atualiza o estado dos navios (marca como afundado)
-    LaunchedEffect(gameState.board) {
-        gameState.ships.forEach { ship ->
+    LaunchedEffect(viewModel.gameState.value.board) {
+        viewModel.gameState.value.ships.forEach { ship ->
             if (!ship.isSunk) {
                 val shipCells = mutableListOf<Pair<Int, Int>>()
-                for (i in gameState.board.indices) {
-                    for (j in gameState.board[i].indices) {
-                        if (gameState.board[i][j] == CellState.SHIP || gameState.board[i][j] == CellState.HIT) {
+                for (i in viewModel.gameState.value.board.indices) {
+                    for (j in viewModel.gameState.value.board[i].indices) {
+                        if (viewModel.gameState.value.board[i][j] == CellState.SHIP || viewModel.gameState.value.board[i][j] == CellState.HIT) {
                             shipCells.add(i to j)
                         }
                     }
                 }
-                val hitCount = shipCells.count { (i, j) -> gameState.board[i][j] == CellState.HIT }
+                val hitCount = shipCells.count { (i, j) -> viewModel.gameState.value.board[i][j] == CellState.HIT }
                 if (shipCells.isNotEmpty() && hitCount == ship.size) {
                     ship.isSunk = true
                 }
@@ -322,24 +333,19 @@ fun GameScreen(isLightTheme: Boolean) {
     }
 
     // Conta os navios restantes
-    val remainingShips by remember(gameState.ships) {
-        mutableStateOf(gameState.ships.count { !it.isSunk })
+    val remainingShips by remember(viewModel.gameState.value.ships) {
+        mutableStateOf(viewModel.gameState.value.ships.count { !it.isSunk })
     }
 
     // Verificar o vencedor (quando todos os navios forem afundados)
     val winner by remember(remainingShips) {
         mutableStateOf(
             if (remainingShips == 0) {
-                if (gameState.lastSunkByPlayer) "Player" else "AI"
+                if (viewModel.gameState.value.lastSunkByPlayer) "Player" else "AI"
             } else {
                 null
             }
         )
-    }
-
-    // Posiciona os navios da IA ao iniciar
-    LaunchedEffect(Unit) {
-        placeShips(gameState.board, gameState.ships)
     }
 
     // Layout principal com Box para sobrepor o Snackbar
@@ -363,12 +369,40 @@ fun GameScreen(isLightTheme: Boolean) {
             verticalArrangement = Arrangement.Top
         ) {
             // Email do jogador
-            Text(
-                text = "Player: $userEmail",
-                style = MaterialTheme.typography.bodyLarge,
-                color = if (isLightTheme) Color.Black else Color.White,
-                modifier = Modifier.padding(bottom = 16.dp)
-            )
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(bottom = 16.dp),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Text(
+                    text = "Player: $userEmail",
+                    style = MaterialTheme.typography.bodyLarge,
+                    color = if (isLightTheme) Color.Black else Color.White
+                )
+
+                // Botão de logout (discreto)
+                Text(
+                    text = "Logout",
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = if (isLightTheme) Color(0xFFEF5350) else Color(0xFFD32F2F),
+                    modifier = Modifier
+                        .border(
+                            width = 1.dp,
+                            color = if (isLightTheme) Color(0xFFEF5350) else Color(0xFFD32F2F),
+                            shape = RoundedCornerShape(8.dp)
+                        )
+                        .padding(horizontal = 12.dp, vertical = 6.dp)
+                        .clickable {
+                            viewModel.resetGame() // Reinicia o jogo
+                            FirebaseAuth.getInstance().signOut() // Desconecta o usuário
+                            navController.navigate("login") {
+                                popUpTo("game") { inclusive = true } // Limpa a pilha de navegação
+                            }
+                        }
+                )
+            }
 
             // Exibir pontuações
             Row(
@@ -422,7 +456,7 @@ fun GameScreen(isLightTheme: Boolean) {
                                     .size(cellSize)
                                     .border(1.dp, if (isLightTheme) Color(0xFFB0BEC5) else Color.White.copy(alpha = 0.3f))
                                     .background(
-                                        when (gameState.board[i][j]) {
+                                        when (viewModel.gameState.value.board[i][j]) {
                                             CellState.HIT -> Color(0xFFFF6F61).copy(alpha = 0.9f)
                                             CellState.MISS -> Color(0xFFB0BEC5).copy(alpha = 0.9f)
                                             else -> if (isLightTheme) Color(0xFFCFD8DC).copy(alpha = 0.9f)
@@ -430,15 +464,15 @@ fun GameScreen(isLightTheme: Boolean) {
                                         }
                                     )
                                     .clickable {
-                                        if (gameState.board[i][j] == CellState.EMPTY) {
-                                            gameState = gameState.copy(
-                                                board = gameState.board.copyOf().apply { this[i][j] = CellState.MISS },
-                                                moves = gameState.moves.apply { add(Move(i, j, CellState.MISS, true)) },
+                                        if (viewModel.gameState.value.board[i][j] == CellState.EMPTY) {
+                                            viewModel.gameState.value = viewModel.gameState.value.copy(
+                                                board = viewModel.gameState.value.board.copyOf().apply { this[i][j] = CellState.MISS },
+                                                moves = viewModel.gameState.value.moves.apply { add(Move(i, j, CellState.MISS, true)) },
                                                 playerTurn = false
                                             )
-                                        } else if (gameState.board[i][j] == CellState.SHIP) {
-                                            val newBoard = gameState.board.copyOf().apply { this[i][j] = CellState.HIT }
-                                            val newMoves = gameState.moves.apply { add(Move(i, j, CellState.HIT, true)) }
+                                        } else if (viewModel.gameState.value.board[i][j] == CellState.SHIP) {
+                                            val newBoard = viewModel.gameState.value.board.copyOf().apply { this[i][j] = CellState.HIT }
+                                            val newMoves = viewModel.gameState.value.moves.apply { add(Move(i, j, CellState.HIT, true)) }
                                             // Verifica se o navio foi afundado
                                             val shipCells = mutableListOf<Pair<Int, Int>>()
                                             for (row in newBoard.indices) {
@@ -449,21 +483,21 @@ fun GameScreen(isLightTheme: Boolean) {
                                                 }
                                             }
                                             val hitCount = shipCells.count { (r, c) -> newBoard[r][c] == CellState.HIT }
-                                            val ship = gameState.ships.find { it.size == shipCells.size && !it.isSunk }
+                                            val ship = viewModel.gameState.value.ships.find { it.size == shipCells.size && !it.isSunk }
                                             val isSunk = ship != null && hitCount == ship.size
                                             if (isSunk) {
                                                 ship?.isSunk = true
                                             }
-                                            gameState = gameState.copy(
+                                            viewModel.gameState.value = viewModel.gameState.value.copy(
                                                 board = newBoard,
                                                 moves = newMoves,
-                                                lastSunkByPlayer = isSunk, // Marca que o jogador afundou o navio
+                                                lastSunkByPlayer = isSunk,
                                                 playerTurn = false
                                             )
                                         }
                                     }
                             ) {
-                                when (gameState.board[i][j]) {
+                                when (viewModel.gameState.value.board[i][j]) {
                                     CellState.HIT -> Text(
                                         "X",
                                         color = Color.White,
@@ -489,8 +523,8 @@ fun GameScreen(isLightTheme: Boolean) {
             // Botão para reiniciar o jogo
             Button(
                 onClick = {
-                    gameState = GameState()
-                    placeShips(gameState.board, gameState.ships)
+                    viewModel.gameState.value = GameState()
+                    placeShips(viewModel.gameState.value.board, viewModel.gameState.value.ships)
                 },
                 modifier = Modifier
                     .fillMaxWidth()
@@ -507,9 +541,8 @@ fun GameScreen(isLightTheme: Boolean) {
             Spacer(modifier = Modifier.height(16.dp))
 
             // Botão para salvar partida
-            var showSaveDialog by remember { mutableStateOf(false) }
             Button(
-                onClick = { showSaveDialog = true },
+                onClick = { viewModel.showSaveDialog.value = true },
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(56.dp)
@@ -523,9 +556,9 @@ fun GameScreen(isLightTheme: Boolean) {
             }
 
             // Diálogo para salvar partida
-            if (showSaveDialog) {
+            if (viewModel.showSaveDialog.value) {
                 AlertDialog(
-                    onDismissRequest = { showSaveDialog = false },
+                    onDismissRequest = { viewModel.showSaveDialog.value = false },
                     title = { Text("Confirm Save", style = MaterialTheme.typography.headlineSmall) },
                     text = { Text("Do you want to save this game?", style = MaterialTheme.typography.bodyLarge) },
                     confirmButton = {
@@ -535,11 +568,11 @@ fun GameScreen(isLightTheme: Boolean) {
                                     val userId = FirebaseAuth.getInstance().currentUser?.uid
                                     if (userId != null) {
                                         val gameData = hashMapOf(
-                                            "moves" to gameState.moves,
+                                            "moves" to viewModel.gameState.value.moves,
                                             "playerScore" to playerScore,
                                             "aiScore" to aiScore,
                                             "winner" to (winner ?: "None"),
-                                            "winnerScore" to if (winner != null) (if (gameState.lastSunkByPlayer) playerScore else aiScore) else 0,
+                                            "winnerScore" to if (winner != null) (if (viewModel.gameState.value.lastSunkByPlayer) playerScore else aiScore) else 0,
                                             "timestamp" to System.currentTimeMillis()
                                         )
                                         db.collection("games")
@@ -547,7 +580,7 @@ fun GameScreen(isLightTheme: Boolean) {
                                             .set(gameData)
                                             .addOnSuccessListener {
                                                 scope.launch {
-                                                    scaffoldState.showSnackbar("Game saved successfully! Winner: ${winner ?: "None"} with ${(if (gameState.lastSunkByPlayer) playerScore else aiScore)} points.")
+                                                    scaffoldState.showSnackbar("Game saved successfully! Winner: ${winner ?: "None"} with ${(if (viewModel.gameState.value.lastSunkByPlayer) playerScore else aiScore)} points.")
                                                 }
                                             }
                                             .addOnFailureListener { e ->
@@ -561,7 +594,7 @@ fun GameScreen(isLightTheme: Boolean) {
                                         }
                                     }
                                 }
-                                showSaveDialog = false
+                                viewModel.showSaveDialog.value = false
                             },
                             modifier = Modifier.clip(RoundedCornerShape(12.dp)),
                             colors = ButtonDefaults.buttonColors(
@@ -574,7 +607,7 @@ fun GameScreen(isLightTheme: Boolean) {
                     },
                     dismissButton = {
                         Button(
-                            onClick = { showSaveDialog = false },
+                            onClick = { viewModel.showSaveDialog.value = false },
                             modifier = Modifier.clip(RoundedCornerShape(12.dp)),
                             colors = ButtonDefaults.buttonColors(
                                 containerColor = if (isLightTheme) Color(0xFF90A4AE) else Color(0xFF0288D1),
@@ -601,14 +634,14 @@ fun GameScreen(isLightTheme: Boolean) {
     }
 
     // Turno da IA
-    if (!gameState.playerTurn) {
+    if (!viewModel.gameState.value.playerTurn) {
         LaunchedEffect(Unit) {
-            val (row, col) = aiTurn(gameState.board)
-            val newBoard = gameState.board.copyOf().apply {
+            val (row, col) = aiTurn(viewModel.gameState.value.board)
+            val newBoard = viewModel.gameState.value.board.copyOf().apply {
                 this[row][col] = if (this[row][col] == CellState.SHIP) CellState.HIT else CellState.MISS
             }
-            val newMoves = gameState.moves.apply {
-                add(Move(row, col, if (gameState.board[row][col] == CellState.SHIP) CellState.HIT else CellState.MISS, false))
+            val newMoves = viewModel.gameState.value.moves.apply {
+                add(Move(row, col, if (viewModel.gameState.value.board[row][col] == CellState.SHIP) CellState.HIT else CellState.MISS, false))
             }
             // Verifica se o navio foi afundado pela IA
             val shipCells = mutableListOf<Pair<Int, Int>>()
@@ -620,15 +653,15 @@ fun GameScreen(isLightTheme: Boolean) {
                 }
             }
             val hitCount = shipCells.count { (r, c) -> newBoard[r][c] == CellState.HIT }
-            val ship = gameState.ships.find { it.size == shipCells.size && !it.isSunk }
+            val ship = viewModel.gameState.value.ships.find { it.size == shipCells.size && !it.isSunk }
             val isSunk = ship != null && hitCount == ship.size
             if (isSunk) {
                 ship?.isSunk = true
             }
-            gameState = gameState.copy(
+            viewModel.gameState.value = viewModel.gameState.value.copy(
                 board = newBoard,
                 moves = newMoves,
-                lastSunkByPlayer = !isSunk, // Marca que a IA afundou o navio
+                lastSunkByPlayer = !isSunk,
                 playerTurn = true
             )
         }
