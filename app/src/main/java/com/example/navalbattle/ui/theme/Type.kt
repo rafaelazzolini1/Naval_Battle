@@ -1,4 +1,5 @@
-package com.naval.battle.ui.theme
+package com.example.navalbattle.ui.theme
+
 
 import androidx.compose.material3.Typography
 import androidx.compose.ui.text.TextStyle
