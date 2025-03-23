@@ -8,6 +8,7 @@ import android.hardware.SensorManager
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -33,6 +34,7 @@ import com.google.firebase.firestore.FirebaseFirestore
 import com.example.navalbattle.ui.theme.NavalBattleTheme
 import kotlinx.coroutines.launch
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.ui.res.painterResource
 
 class MainActivity : ComponentActivity() {
     private lateinit var auth: FirebaseAuth
@@ -145,8 +147,14 @@ fun LoginScreen(auth: FirebaseAuth, navController: androidx.navigation.NavContro
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        // Removido o título "Naval Battle - Login"
-
+        // Imagem acima do campo de email
+        Image(
+            painter = painterResource(id = R.drawable.intro), // Substitua "email_logo" pelo nome do seu recurso
+            contentDescription = "Email Logo",
+            modifier = Modifier
+                .size(128.dp) // Tamanho da imagem (ajuste conforme necessário)
+                .padding(bottom = 32.dp) // Espaçamento entre a imagem e o campo de email
+        )
         // Campo de email
         OutlinedTextField(
             value = email,
