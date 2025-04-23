@@ -9,7 +9,8 @@ data class GameState(
         Ship(3, "Submarino"),
         Ship(2, "Destroyer")
     ),
-    val moves: MutableList<Move> = mutableListOf(),
-    val playerTurn: Boolean = true,
-    val lastSunkByPlayer: Boolean = false
+    val moves: MutableList<Move> = mutableListOf(),  // Moves positions
+    val mines: List<Pair<Int, Int>> = emptyList(),   // Mine positions
+    val playerTurn: Boolean = true,                  // Turn
+    val lastSunkByPlayer: Boolean = false            // Last hit
 )

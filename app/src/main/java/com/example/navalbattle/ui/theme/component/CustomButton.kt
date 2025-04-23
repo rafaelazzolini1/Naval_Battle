@@ -26,7 +26,7 @@ fun CustomButton(
             .fillMaxWidth()
             .height(56.dp)
             .clip(RoundedCornerShape(12.dp)),
-        colors = ButtonDefaults.buttonColors(
+            colors = ButtonDefaults.buttonColors(
             containerColor = if (isLightTheme) Color(0xFF90A4AE) else Color(0xFF0288D1),
             contentColor = if (isLightTheme) Color.Black else Color.White
         )

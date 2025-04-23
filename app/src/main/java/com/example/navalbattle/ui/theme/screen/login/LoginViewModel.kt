@@ -32,7 +32,7 @@ class LoginViewModel(private val authRepository: AuthRepository) : ViewModel() {
         }
     }
 
-    fun register() {
+    fun registerWithEmailVerification(onComplete: (Boolean) -> Unit) {
         emailError.value = email.value.isEmpty()
         passwordError.value = password.value.isEmpty()
 
@@ -40,13 +40,43 @@ class LoginViewModel(private val authRepository: AuthRepository) : ViewModel() {
             viewModelScope.launch {
                 val result = authRepository.register(email.value, password.value)
                 if (result.isSuccess) {
-                    errorMessage.value = "User registered successfully!"
+
+                    val verificationResult = authRepository.sendEmailVerification()
+                    if (verificationResult.isSuccess) {
+                        errorMessage.value = "Registration successful! A verification email has been sent"
+                    } else {
+                        errorMessage.value = "Account created but failed to send verification email"
+                        onComplete(false)
+                    }
                 } else {
                     errorMessage.value = result.exceptionOrNull()?.message ?: "Registration failed"
+                    onComplete(false)
                 }
             }
         } else {
             errorMessage.value = "Please fill in all fields!"
+            onComplete(false)
+        }
+        clearUserData()
+
+    }
+
+    fun resetPassword(resetEmail: String, onComplete: (Boolean) -> Unit) {
+        if (resetEmail.isEmpty()) {
+            errorMessage.value = "Please enter an email address"
+            onComplete(false)
+            return
+        }
+
+        viewModelScope.launch {
+            val result = authRepository.resetPassword(resetEmail)
+            if (result.isSuccess) {
+                errorMessage.value = "Password reset link sent to $resetEmail"
+                onComplete(true)
+            } else {
+                errorMessage.value = "Failed to send reset email: ${result.exceptionOrNull()?.message}"
+                onComplete(false)
+            }
         }
     }
 

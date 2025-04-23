@@ -9,18 +9,53 @@ import com.example.navalbattle.data.model.Ship
 import com.google.firebase.auth.FirebaseAuth
 import com.naval.battle.data.repository.GameRepository
 import kotlinx.coroutines.launch
+import com.example.navalbattle.R
 
 class GameViewModel(private val gameRepository: GameRepository) : ViewModel() {
     val gameState = mutableStateOf(GameState())
     val showSaveDialog = mutableStateOf(false)
 
-    init {
-        resetGame()
-    }
-
-    fun resetGame() {
-        gameState.value = GameState()
-        placeShips(gameState.value.board, gameState.value.ships)
+    fun resetGame(numberOfMines: Int) {
+        val ships = listOf(
+            Ship(
+                size = 5,
+                name = "Aircraft Carrier",
+                horizontalImageResId = R.drawable.aircraft_horizontal,
+                verticalImageResId = R.drawable.aircraft_vertical
+            ),
+            Ship(
+                size = 4,
+                name = "Battleship",
+                horizontalImageResId = R.drawable.battleship_horizontal,
+                verticalImageResId = R.drawable.battleship_vertical
+            ),
+            Ship(
+                size = 3,
+                name = "Cruiser",
+                horizontalImageResId = R.drawable.cruiser_horizontal,
+                verticalImageResId = R.drawable.cruiser_vertical
+            ),
+            Ship(
+                size = 3,
+                name = "Submarine",
+                horizontalImageResId = R.drawable.submarine_horizontal,
+                verticalImageResId = R.drawable.submarine_vertical
+            ),
+            Ship(
+                size = 2,
+                name = "Destroyer",
+                horizontalImageResId = R.drawable.destroyer_horizontal,
+                verticalImageResId = R.drawable.destroyer_vertical
+            )
+        )
+        val initialBoard = Array(10) { Array(10) { CellState.EMPTY } }
+        placeShips(initialBoard, ships)
+        val minePositions = placeMines(initialBoard, numberOfMines)
+        gameState.value = GameState(
+            board = initialBoard,
+            ships = ships,
+            mines = minePositions
+        )
     }
 
     fun saveGame(playerScore: Int, aiScore: Int, winner: String?, winnerScore: Int, onSuccess: () -> Unit, onError: (String) -> Unit) {
@@ -48,9 +83,16 @@ class GameViewModel(private val gameRepository: GameRepository) : ViewModel() {
                 val col = (0..9).random()
 
                 if (canPlaceShip(board, row, col, ship.size, orientation)) {
+                    ship.startRow = row
+                    ship.startCol = col
+                    ship.orientation = orientation
+
                     for (i in 0 until ship.size) {
-                        if (orientation == 0) board[row][col + i] = CellState.SHIP
-                        else board[row + i][col] = CellState.SHIP
+                        if (orientation == 0) {
+                            board[row][col + i] = CellState.SHIP
+                        } else {
+                            board[row + i][col] = CellState.SHIP
+                        }
                     }
                     placed = true
                 }
@@ -69,11 +111,31 @@ class GameViewModel(private val gameRepository: GameRepository) : ViewModel() {
         return true
     }
 
+    private fun placeMines(board: Array<Array<CellState>>, numberOfMines: Int): List<Pair<Int, Int>> {
+        val minePositions = mutableListOf<Pair<Int, Int>>()
+        var minesPlaced = 0
+        val maxMines = minOf(numberOfMines, 10)
+
+        while (minesPlaced < maxMines) {
+            val row = (0..9).random()
+            val col = (0..9).random()
+
+            if (board[row][col] == CellState.EMPTY) {
+                board[row][col] = CellState.MINE
+                minePositions.add(row to col)
+                minesPlaced++
+            }
+        }
+        return minePositions
+    }
+
     fun aiTurn(): Pair<Int, Int> {
         while (true) {
             val row = (0..9).random()
             val col = (0..9).random()
-            if (gameState.value.board[row][col] == CellState.EMPTY || gameState.value.board[row][col] == CellState.SHIP) {
+            if (gameState.value.board[row][col] == CellState.EMPTY ||
+                gameState.value.board[row][col] == CellState.SHIP ||
+                gameState.value.board[row][col] == CellState.MINE) {
                 return row to col
             }
         }

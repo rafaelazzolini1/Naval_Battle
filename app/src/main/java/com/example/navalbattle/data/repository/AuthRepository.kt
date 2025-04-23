@@ -24,9 +24,23 @@ class AuthRepository(private val auth: FirebaseAuth) {
         }
     }
 
-    fun signOut() {
-        auth.signOut()
+    suspend fun sendEmailVerification(): Result<Unit> {
+        return try {
+            FirebaseAuth.getInstance().currentUser?.let { user ->
+                user.sendEmailVerification().await()
+                Result.success(Unit)
+            } ?: Result.failure(Exception("No user is currently signed in"))
+        } catch (e: Exception) {
+            Result.failure(e)
+        }
     }
 
-    fun getCurrentUser(): FirebaseUser? = auth.currentUser
+    suspend fun resetPassword(email: String): Result<Unit> {
+        return try {
+            FirebaseAuth.getInstance().sendPasswordResetEmail(email).await()
+            Result.success(Unit)
+        } catch (e: Exception) {
+            Result.failure(e)
+        }
+    }
 }
