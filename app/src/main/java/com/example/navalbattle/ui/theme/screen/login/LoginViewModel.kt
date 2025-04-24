@@ -32,6 +32,19 @@ class LoginViewModel(private val authRepository: AuthRepository) : ViewModel() {
         }
     }
 
+//    fun signInWithGoogle(idToken: String, onSuccess: () -> Unit, onFailure: (String) -> Unit) {
+//        viewModelScope.launch {
+//            val result = authRepository.signInWithGoogle(idToken)
+//            if (result.isSuccess) {
+//                clearUserData()
+//                onSuccess()
+//            } else {
+//                errorMessage.value = result.exceptionOrNull()?.message ?: "Google Sign-In failed"
+//                onFailure(errorMessage.value!!)
+//            }
+//        }
+//    }
+
     fun registerWithEmailVerification(onComplete: (Boolean) -> Unit) {
         emailError.value = email.value.isEmpty()
         passwordError.value = password.value.isEmpty()

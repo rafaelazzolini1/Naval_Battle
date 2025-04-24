@@ -3,7 +3,15 @@ package com.example.navalbattle.ui.theme.screen.login
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
@@ -11,8 +19,22 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Visibility
 import androidx.compose.material.icons.filled.VisibilityOff
-import androidx.compose.material3.*
-import androidx.compose.runtime.*
+import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.Button
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
@@ -47,6 +69,54 @@ fun LoginScreen(
     var passwordVisible by remember { mutableStateOf(false) }
     var showPasswordResetDialog by remember { mutableStateOf(false) }
     var resetEmail by remember { mutableStateOf("") }
+
+//    val context = LocalContext.current
+//    val googleIdOption = GetGoogleIdOption.Builder()
+//        .setFilterByAuthorizedAccounts(false) // Mostrar todas as contas disponíveis
+//        .setServerClientId("")
+//        .build()
+//    val signInClient = Identity.getSignInClient(context)
+//
+//    // Launcher para Google Sign-In
+//    val googleSignInLauncher = rememberLauncherForActivityResult(
+//        contract = ActivityResultContracts.StartIntentSenderForResult()
+//    ) { result ->
+//        println("Google Sign-In result: ${result.resultCode}, data=${result.data}")
+//        if (result.resultCode == Activity.RESULT_CANCELED) {
+//            viewModel.errorMessage.value = "Google Sign-In canceled by user"
+//            println("Google Sign-In canceled by user")
+//            return@rememberLauncherForActivityResult
+//        }
+//        try {
+//            val credential = signInClient.getSignInCredentialFromIntent(result.data)
+//            val googleIdToken = credential.googleIdToken
+//            println("Google Sign-In credential: ${credential.id}, idToken=$googleIdToken")
+//            googleIdToken?.let { idToken ->
+//                viewModel.signInWithGoogle(
+//                    idToken = idToken,
+//                    onSuccess = {
+//                        println("Google Sign-In successful, navigating to game")
+//                        navController.navigate("game") {
+//                            popUpTo("login") { inclusive = true }
+//                        }
+//                    },
+//                    onFailure = { error ->
+//                        viewModel.errorMessage.value = "Google Sign-In failed: $error"
+//                        println("Google Sign-In failed: $error")
+//                    }
+//                )
+//            } ?: run {
+//                viewModel.errorMessage.value = "Google Sign-In failed: No ID token"
+//                println("Google Sign-In failed: No ID token")
+//            }
+//        } catch (e: GoogleIdTokenParsingException) {
+//            viewModel.errorMessage.value = "Google Sign-In failed: ${e.message}"
+//            println("Google Sign-In failed: ${e.message}")
+//        } catch (e: Exception) {
+//            viewModel.errorMessage.value = "Unexpected error: ${e.message}"
+//            println("Unexpected error: ${e.message}")
+//        }
+//    }
 
     // Adjust sizes and spacing based on orientation
     val padding = if (isLandscape) 12.dp else 24.dp
@@ -122,7 +192,7 @@ fun LoginScreen(
                 modifier = Modifier.fillMaxWidth(textFieldWidthFraction),
             )
 
-            // Forgot Password link - better aligned with text boxes
+            // Forgot Password link
             Box(
                 modifier = Modifier
                     .fillMaxWidth(textFieldWidthFraction)
@@ -169,7 +239,33 @@ fun LoginScreen(
                 modifier = Modifier.fillMaxWidth(textFieldWidthFraction),
             )
 
-            // Improved feedback message area
+            Spacer(modifier = Modifier.height(spacerHeight))
+
+//            Button(onClick = {
+//                val signInRequest = BeginSignInRequest.builder()
+//                    .setGoogleIdTokenRequestOptions(
+//                        BeginSignInRequest.GoogleIdTokenRequestOptions.builder()
+//                            .setSupported(true)
+//                            .setServerClientId("")
+//                            .setFilterByAuthorizedAccounts(false)
+//                            .build()
+//                    )
+//                    .build()
+//                signInClient.beginSignIn(signInRequest)
+//                    .addOnSuccessListener { result ->
+//                        googleSignInLauncher.launch(
+//                            IntentSenderRequest.Builder(result.pendingIntent.intentSender).build()
+//                        )
+//                    }
+//                    .addOnFailureListener { e ->
+//                        viewModel.errorMessage.value = "Failed to start Google Sign-In: ${e.message}"
+//                        println("Failed to start Google Sign-In: ${e.message}")
+//                    }
+//            }) {
+//                Text("Sign in with Google")
+//            }
+
+            // Feedback message area
             Spacer(modifier = Modifier.height(spacerHeight))
 
             viewModel.errorMessage.value?.let {

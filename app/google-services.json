@@ -1,6 +1,7 @@
 {
   "project_info": {
     "project_number": "365868890310",
+    "firebase_url": "https://plataformaxarxes-default-rtdb.europe-west1.firebasedatabase.app",
     "project_id": "plataformaxarxes",
     "storage_bucket": "plataformaxarxes.firebasestorage.app"
   },
@@ -9,9 +10,23 @@
       "client_info": {
         "mobilesdk_app_id": "1:365868890310:android:3030147c08813e33ee7fc7",
         "android_client_info": {
-"package_name": "com.example.navalbattle"        }
+          "package_name": "com.example.navalbattle"
+        }
       },
-      "oauth_client": [],
+      "oauth_client": [
+        {
+          "client_id": "365868890310-ejqhmq68eispbddd11hqp5kk7mq4f5ii.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.navalbattle",
+            "certificate_hash": "8e5c0ddbcc90833e3b9a43b6c958428bfa7a0cd5"
+          }
+        },
+        {
+          "client_id": "365868890310-pb77k1u5lrrcv0l611bcta4flc5ud0nr.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
       "api_key": [
         {
           "current_key": "AIzaSyDe9uj3ukvqrisRLOoI_96vuBhD1l-cc_I"
@@ -19,7 +34,12 @@
       ],
       "services": {
         "appinvite_service": {
-          "other_platform_oauth_client": []
+          "other_platform_oauth_client": [
+            {
+              "client_id": "365868890310-pb77k1u5lrrcv0l611bcta4flc5ud0nr.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
         }
       }
     }

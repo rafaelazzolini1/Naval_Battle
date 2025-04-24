@@ -1,4 +1,3 @@
-
 package com.example.navalbattle
 
 import android.os.Bundle
@@ -23,6 +22,7 @@ import com.example.navalbattle.ui.theme.screen.game.GameViewModel
 import com.example.navalbattle.ui.theme.screen.login.LoginViewModel
 import com.example.navalbattle.util.LightSensorManager
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.firestore.FirebaseFirestore
 import com.naval.battle.data.repository.AuthRepository
 import com.naval.battle.data.repository.GameRepository
@@ -34,7 +34,12 @@ import com.naval.battle.data.repository.GameRepository
 class MainActivity : ComponentActivity() {
     // Lazily initialized repositories for authentication and game data
     private val authRepository by lazy { AuthRepository(FirebaseAuth.getInstance()) }
-    private val gameRepository by lazy { GameRepository(FirebaseFirestore.getInstance()) }
+    private val gameRepository by lazy {
+        GameRepository(
+            FirebaseFirestore.getInstance(),
+            FirebaseDatabase.getInstance()
+        )
+    }
 
     // ViewModels for login and game screens, initialized with custom factories
     private val loginViewModel: LoginViewModel by viewModels { LoginViewModelFactory(authRepository) }
@@ -96,7 +101,6 @@ class MainActivity : ComponentActivity() {
         // Ensure lightSensorManager is accessible; reinitialize if needed
         val lightSensorManager = LightSensorManager(this)
         lightSensorManager.stopListening()
-
     }
 }
 

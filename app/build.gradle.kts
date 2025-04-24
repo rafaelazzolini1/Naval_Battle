@@ -54,6 +54,9 @@ dependencies {
     implementation(libs.androidx.compose.material)
     implementation(libs.androidx.compose.material.icons.extended)
     implementation(libs.androidx.navigation.compose)
+    implementation(libs.firebase.database.ktx)
+    implementation(libs.gms.play.services.auth)
+    implementation(libs.googleid)
 
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
@@ -69,4 +72,8 @@ dependencies {
 
     implementation(platform("com.google.firebase:firebase-bom:33.0.0"))
     implementation("com.google.firebase:firebase-firestore")
+
+    // Google Sign-In
+//    implementation('com.google.android.gms:play-services-auth:21.2.0')
+
 }
