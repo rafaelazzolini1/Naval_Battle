@@ -22,25 +22,18 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import com.example.navalbattle.ui.theme.screen.game.GameScreen
 import com.example.navalbattle.ui.theme.screen.game.GameViewModel
+import com.example.navalbattle.ui.theme.screen.game.MenuScreen
+import com.example.navalbattle.ui.theme.screen.game.MenuViewModel
 import com.example.navalbattle.ui.theme.screen.login.LoginScreen
 import com.example.navalbattle.ui.theme.screen.login.LoginViewModel
 
-/**
- * Composable that sets up the navigation host for the app, defining routes for login and game screens.
- *
- * @param navController Navigation controller for screen transitions
- * @param isLightTheme Whether the light theme is currently active
- * @param loginViewModel ViewModel for handling login logic
- * @param gameViewModel ViewModel for handling game logic
- * @param onThemeToggle Callback to toggle between light and dark themes
- * @param modifier Modifier for styling the navigation host
- */
 @Composable
 fun AppNavigation(
     navController: NavHostController,
     isLightTheme: Boolean,
     loginViewModel: LoginViewModel,
     gameViewModel: GameViewModel,
+    menuViewModel: MenuViewModel,
     onThemeToggle: (Boolean) -> Unit,
     modifier: Modifier = Modifier
 ) {
@@ -50,7 +43,6 @@ fun AppNavigation(
             startDestination = "login",
             modifier = Modifier.fillMaxSize()
         ) {
-            // Login screen route
             composable("login") {
                 LoginScreenWithThemeToggle(
                     navController = navController,
@@ -59,7 +51,15 @@ fun AppNavigation(
                     onThemeToggle = onThemeToggle
                 )
             }
-            // Game screen route
+            composable("menu") {
+                MenuScreenWithThemeToggle(
+                    navController = navController,
+                    isLightTheme = isLightTheme,
+                    gameViewModel = gameViewModel,
+                    menuViewModel = menuViewModel,
+                    onThemeToggle = onThemeToggle
+                )
+            }
             composable("game") {
                 GameScreenWithThemeToggle(
                     isLightTheme = isLightTheme,
@@ -72,14 +72,6 @@ fun AppNavigation(
     }
 }
 
-/**
- * Composable function that displays the login screen with a theme toggle button.
- *
- * @param navController Navigation controller for screen transitions
- * @param isLightTheme Whether the light theme is currently active
- * @param loginViewModel ViewModel for handling login logic
- * @param onThemeToggle Callback to toggle between light and dark themes
- */
 @Composable
 fun LoginScreenWithThemeToggle(
     navController: NavHostController,
@@ -88,10 +80,7 @@ fun LoginScreenWithThemeToggle(
     onThemeToggle: (Boolean) -> Unit
 ) {
     Box(modifier = Modifier.fillMaxSize()) {
-        // Render the login screen
         LoginScreen(navController, isLightTheme, loginViewModel)
-
-        // Theme toggle button at the bottom-right corner
         ThemeToggle(
             isLightTheme = isLightTheme,
             onThemeToggle = onThemeToggle,
@@ -102,14 +91,31 @@ fun LoginScreenWithThemeToggle(
     }
 }
 
-/**
- * Composable function that displays the game screen with a theme toggle button.
- *
- * @param isLightTheme Whether the light theme is currently active
- * @param gameViewModel ViewModel for handling game logic
- * @param navController Navigation controller for screen transitions
- * @param onThemeToggle Callback to toggle between light and dark themes
- */
+@Composable
+fun MenuScreenWithThemeToggle(
+    navController: NavHostController,
+    isLightTheme: Boolean,
+    gameViewModel: GameViewModel,
+    menuViewModel: MenuViewModel,
+    onThemeToggle: (Boolean) -> Unit
+) {
+    Box(modifier = Modifier.fillMaxSize()) {
+        MenuScreen(
+            isLightTheme = isLightTheme,
+            gameViewModel = gameViewModel,
+            menuViewModel = menuViewModel,
+            navController = navController
+        )
+        ThemeToggle(
+            isLightTheme = isLightTheme,
+            onThemeToggle = onThemeToggle,
+            modifier = Modifier
+                .align(Alignment.BottomEnd)
+                .padding(40.dp)
+        )
+    }
+}
+
 @Composable
 fun GameScreenWithThemeToggle(
     isLightTheme: Boolean,
@@ -118,29 +124,10 @@ fun GameScreenWithThemeToggle(
     onThemeToggle: (Boolean) -> Unit
 ) {
     Box(modifier = Modifier.fillMaxSize()) {
-        // Render the game screen
         GameScreen(isLightTheme, gameViewModel, navController)
-
-        // Theme toggle button at the bottom-right corner (uncomment if needed)
-        /*
-        ThemeToggle(
-            isLightTheme = isLightTheme,
-            onThemeToggle = onThemeToggle,
-            modifier = Modifier
-                .align(Alignment.BottomEnd)
-                .padding(26.dp)
-        )
-        */
     }
 }
 
-/**
- * Composable function for a theme toggle button that switches between light and dark modes.
- *
- * @param isLightTheme Whether the light theme is currently active
- * @param onThemeToggle Callback to toggle between light and dark themes
- * @param modifier Modifier for styling and positioning the button
- */
 @Composable
 fun ThemeToggle(
     isLightTheme: Boolean,
@@ -159,7 +146,6 @@ fun ThemeToggle(
                     MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.8f)
             )
     ) {
-        // Display light or dark mode icon based on current theme
         Icon(
             imageVector = if (isLightTheme) Icons.Filled.LightMode else Icons.Filled.NightlightRound,
             contentDescription = "Toggle theme",

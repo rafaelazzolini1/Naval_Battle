@@ -1,59 +1,20 @@
 package com.naval.battle.data.repository
 
+import android.os.Build
 import android.util.Log
+import androidx.annotation.RequiresApi
 import com.example.navalbattle.data.model.GameState
-import com.example.navalbattle.data.model.Move
-import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.firestore.FirebaseFirestore
 import kotlinx.coroutines.tasks.await
+import java.time.Instant
 import java.util.UUID
 
 class GameRepository(
-    private val firestore: FirebaseFirestore,
-    private val realtimeDatabase: FirebaseDatabase
+    private val firestore: FirebaseFirestore
+
 ) {
     companion object {
         private const val TAG = "GameRepository"
-    }
-
-    /**
-     * Saves a game move to the Realtime Database under the user's game session.
-     *
-     * @param userId The authenticated user's ID
-     * @param gameId The unique ID of the game session
-     * @param move The move data to save
-     * @param shipSunk The name of the ship sunk, if any
-     * @param turnNumber The turn number of the move
-     * @return Result<Unit> indicating success or failure
-     */
-    suspend fun saveMove(
-        userId: String,
-        gameId: String,
-        move: Move,
-        shipSunk: String?,
-        turnNumber: Int
-    ): Result<Unit> {
-        return try {
-            val moveData = hashMapOf(
-                "row" to move.row,
-                "col" to move.col,
-                "result" to move.result.name,
-                "isPlayerMove" to move.isPlayerMove,
-                "shipSunk" to shipSunk,
-                "timestamp" to System.currentTimeMillis(),
-                "turnNumber" to turnNumber
-            )
-            Log.d(TAG, "Saving move to Realtime Database: userId=$userId, gameId=$gameId, move=$moveData")
-            realtimeDatabase.getReference("games/$userId/$gameId/moves")
-                .push()
-                .setValue(moveData)
-                .await()
-            Log.d(TAG, "Move saved successfully")
-            Result.success(Unit)
-        } catch (e: Exception) {
-            Log.e(TAG, "Error saving move: ${e.message}", e)
-            Result.failure(e)
-        }
     }
 
     /**
@@ -67,6 +28,7 @@ class GameRepository(
      * @param winnerScore The winner's score
      * @return Result<Unit> indicating success or failure
      */
+    @RequiresApi(Build.VERSION_CODES.O)
     suspend fun saveGame(
         userId: String,
         gameState: GameState,
@@ -76,13 +38,15 @@ class GameRepository(
         winnerScore: Int
     ): Result<Unit> {
         return try {
+            val totalMoves = gameState.moves.size
             val gameData = hashMapOf(
-                "moves" to gameState.moves,
-                "playerScore" to playerScore,
-                "aiScore" to aiScore,
                 "winner" to (winner ?: "None"),
                 "winnerScore" to winnerScore,
-                "timestamp" to System.currentTimeMillis()
+                "timestamp" to Instant.now().toString(),
+                "moves" to gameState.moves,
+                "totalMoves" to totalMoves,
+                "playerScore" to playerScore,
+                "aiScore" to aiScore
             )
             Log.d(TAG, "Saving game summary to Firestore: userId=$userId, gameData=$gameData")
             firestore.collection("games")

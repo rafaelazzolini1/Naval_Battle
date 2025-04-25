@@ -1,19 +1,23 @@
 package com.example.navalbattle.ui.theme.screen.game
 
+import android.os.Build
+import androidx.annotation.RequiresApi
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.navalbattle.R
 import com.example.navalbattle.data.model.CellState
 import com.example.navalbattle.data.model.GameState
 import com.example.navalbattle.data.model.Ship
 import com.google.firebase.auth.FirebaseAuth
 import com.naval.battle.data.repository.GameRepository
 import kotlinx.coroutines.launch
-import com.example.navalbattle.R
 
 class GameViewModel(private val gameRepository: GameRepository) : ViewModel() {
     val gameState = mutableStateOf(GameState())
-    val showSaveDialog = mutableStateOf(false)
+    var timeLimit = 7 // Default value
+        private set
+    val isTimerPaused = mutableStateOf(false) // New state for pausing timer
 
     fun resetGame(numberOfMines: Int) {
         val ships = listOf(
@@ -54,11 +58,30 @@ class GameViewModel(private val gameRepository: GameRepository) : ViewModel() {
         gameState.value = GameState(
             board = initialBoard,
             ships = ships,
-            mines = minePositions
+            mines = minePositions,
+            moves = mutableListOf(),
+            playerTurn = true,
+            lastSunkByPlayer = false
         )
     }
 
-    fun saveGame(playerScore: Int, aiScore: Int, winner: String?, winnerScore: Int, onSuccess: () -> Unit, onError: (String) -> Unit) {
+    fun updateTimerSettings(newTimeLimit: Int) {
+        timeLimit = newTimeLimit
+    }
+
+    fun toggleTimerPause() {
+        isTimerPaused.value = !isTimerPaused.value
+    }
+
+    @RequiresApi(Build.VERSION_CODES.O)
+    fun saveGame(
+        playerScore: Int,
+        aiScore: Int,
+        winner: String?,
+        winnerScore: Int,
+        onSuccess: () -> Unit,
+        onError: (String) -> Unit
+    ) {
         viewModelScope.launch {
             val userId = FirebaseAuth.getInstance().currentUser?.uid
             if (userId != null) {

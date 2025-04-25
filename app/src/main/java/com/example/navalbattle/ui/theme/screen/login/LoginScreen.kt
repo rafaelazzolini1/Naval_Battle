@@ -70,54 +70,6 @@ fun LoginScreen(
     var showPasswordResetDialog by remember { mutableStateOf(false) }
     var resetEmail by remember { mutableStateOf("") }
 
-//    val context = LocalContext.current
-//    val googleIdOption = GetGoogleIdOption.Builder()
-//        .setFilterByAuthorizedAccounts(false) // Mostrar todas as contas disponíveis
-//        .setServerClientId("")
-//        .build()
-//    val signInClient = Identity.getSignInClient(context)
-//
-//    // Launcher para Google Sign-In
-//    val googleSignInLauncher = rememberLauncherForActivityResult(
-//        contract = ActivityResultContracts.StartIntentSenderForResult()
-//    ) { result ->
-//        println("Google Sign-In result: ${result.resultCode}, data=${result.data}")
-//        if (result.resultCode == Activity.RESULT_CANCELED) {
-//            viewModel.errorMessage.value = "Google Sign-In canceled by user"
-//            println("Google Sign-In canceled by user")
-//            return@rememberLauncherForActivityResult
-//        }
-//        try {
-//            val credential = signInClient.getSignInCredentialFromIntent(result.data)
-//            val googleIdToken = credential.googleIdToken
-//            println("Google Sign-In credential: ${credential.id}, idToken=$googleIdToken")
-//            googleIdToken?.let { idToken ->
-//                viewModel.signInWithGoogle(
-//                    idToken = idToken,
-//                    onSuccess = {
-//                        println("Google Sign-In successful, navigating to game")
-//                        navController.navigate("game") {
-//                            popUpTo("login") { inclusive = true }
-//                        }
-//                    },
-//                    onFailure = { error ->
-//                        viewModel.errorMessage.value = "Google Sign-In failed: $error"
-//                        println("Google Sign-In failed: $error")
-//                    }
-//                )
-//            } ?: run {
-//                viewModel.errorMessage.value = "Google Sign-In failed: No ID token"
-//                println("Google Sign-In failed: No ID token")
-//            }
-//        } catch (e: GoogleIdTokenParsingException) {
-//            viewModel.errorMessage.value = "Google Sign-In failed: ${e.message}"
-//            println("Google Sign-In failed: ${e.message}")
-//        } catch (e: Exception) {
-//            viewModel.errorMessage.value = "Unexpected error: ${e.message}"
-//            println("Unexpected error: ${e.message}")
-//        }
-//    }
-
     // Adjust sizes and spacing based on orientation
     val padding = if (isLandscape) 12.dp else 24.dp
     val imageSize = if (isLandscape) 60.dp else 128.dp
@@ -217,7 +169,7 @@ fun LoginScreen(
                 text = "Login",
                 onClick = {
                     viewModel.signIn {
-                        navController.navigate("game") {
+                        navController.navigate("menu") {
                             popUpTo("login") { inclusive = true }
                         }
                     }
@@ -240,30 +192,6 @@ fun LoginScreen(
             )
 
             Spacer(modifier = Modifier.height(spacerHeight))
-
-//            Button(onClick = {
-//                val signInRequest = BeginSignInRequest.builder()
-//                    .setGoogleIdTokenRequestOptions(
-//                        BeginSignInRequest.GoogleIdTokenRequestOptions.builder()
-//                            .setSupported(true)
-//                            .setServerClientId("")
-//                            .setFilterByAuthorizedAccounts(false)
-//                            .build()
-//                    )
-//                    .build()
-//                signInClient.beginSignIn(signInRequest)
-//                    .addOnSuccessListener { result ->
-//                        googleSignInLauncher.launch(
-//                            IntentSenderRequest.Builder(result.pendingIntent.intentSender).build()
-//                        )
-//                    }
-//                    .addOnFailureListener { e ->
-//                        viewModel.errorMessage.value = "Failed to start Google Sign-In: ${e.message}"
-//                        println("Failed to start Google Sign-In: ${e.message}")
-//                    }
-//            }) {
-//                Text("Sign in with Google")
-//            }
 
             // Feedback message area
             Spacer(modifier = Modifier.height(spacerHeight))

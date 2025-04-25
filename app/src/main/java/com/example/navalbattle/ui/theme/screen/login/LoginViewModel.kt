@@ -32,19 +32,6 @@ class LoginViewModel(private val authRepository: AuthRepository) : ViewModel() {
         }
     }
 
-//    fun signInWithGoogle(idToken: String, onSuccess: () -> Unit, onFailure: (String) -> Unit) {
-//        viewModelScope.launch {
-//            val result = authRepository.signInWithGoogle(idToken)
-//            if (result.isSuccess) {
-//                clearUserData()
-//                onSuccess()
-//            } else {
-//                errorMessage.value = result.exceptionOrNull()?.message ?: "Google Sign-In failed"
-//                onFailure(errorMessage.value!!)
-//            }
-//        }
-//    }
-
     fun registerWithEmailVerification(onComplete: (Boolean) -> Unit) {
         emailError.value = email.value.isEmpty()
         passwordError.value = password.value.isEmpty()
@@ -53,7 +40,6 @@ class LoginViewModel(private val authRepository: AuthRepository) : ViewModel() {
             viewModelScope.launch {
                 val result = authRepository.register(email.value, password.value)
                 if (result.isSuccess) {
-
                     val verificationResult = authRepository.sendEmailVerification()
                     if (verificationResult.isSuccess) {
                         errorMessage.value = "Registration successful! A verification email has been sent"
@@ -71,7 +57,6 @@ class LoginViewModel(private val authRepository: AuthRepository) : ViewModel() {
             onComplete(false)
         }
         clearUserData()
-
     }
 
     fun resetPassword(resetEmail: String, onComplete: (Boolean) -> Unit) {
