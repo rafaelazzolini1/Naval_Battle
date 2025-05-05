@@ -68,12 +68,9 @@ dependencies {
 
     implementation(platform("com.google.firebase:firebase-bom:33.0.0"))
     implementation("com.google.firebase:firebase-auth")
+    implementation("com.google.firebase:firebase-database")
     implementation("androidx.navigation:navigation-compose:2.7.5")
 
-    implementation(platform("com.google.firebase:firebase-bom:33.0.0"))
     implementation("com.google.firebase:firebase-firestore")
-
-    // Google Sign-In
-//    implementation('com.google.android.gms:play-services-auth:21.2.0')
 
 }

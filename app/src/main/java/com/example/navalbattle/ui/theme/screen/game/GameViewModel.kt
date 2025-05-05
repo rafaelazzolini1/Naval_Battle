@@ -8,18 +8,22 @@ import androidx.lifecycle.viewModelScope
 import com.example.navalbattle.R
 import com.example.navalbattle.data.model.CellState
 import com.example.navalbattle.data.model.GameState
+import com.example.navalbattle.data.model.Move
 import com.example.navalbattle.data.model.Ship
 import com.google.firebase.auth.FirebaseAuth
 import com.naval.battle.data.repository.GameRepository
 import kotlinx.coroutines.launch
+import java.util.UUID
 
 class GameViewModel(private val gameRepository: GameRepository) : ViewModel() {
     val gameState = mutableStateOf(GameState())
     var timeLimit = 7 // Default value
         private set
     val isTimerPaused = mutableStateOf(false) // New state for pausing timer
+    private var matchId: String? = null // Store matchId for the current game
 
     fun resetGame(numberOfMines: Int) {
+        matchId = UUID.randomUUID().toString() // Generate a new matchId
         val ships = listOf(
             Ship(
                 size = 5,
@@ -73,6 +77,22 @@ class GameViewModel(private val gameRepository: GameRepository) : ViewModel() {
         isTimerPaused.value = !isTimerPaused.value
     }
 
+    /**
+     * Saves a single move to the Realtime Database.
+     */
+    private fun saveMove(move: Move) {
+        viewModelScope.launch {
+            val userId = FirebaseAuth.getInstance().currentUser?.uid
+            if (userId != null && matchId != null) {
+                val result = gameRepository.saveMove(userId, matchId!!, move)
+                if (result.isFailure) {
+                    // Handle error (e.g., log or notify user)
+                    println("Error saving move: ${result.exceptionOrNull()?.message}")
+                }
+            }
+        }
+    }
+
     @RequiresApi(Build.VERSION_CODES.O)
     fun saveGame(
         playerScore: Int,
@@ -85,7 +105,14 @@ class GameViewModel(private val gameRepository: GameRepository) : ViewModel() {
         viewModelScope.launch {
             val userId = FirebaseAuth.getInstance().currentUser?.uid
             if (userId != null) {
-                val result = gameRepository.saveGame(userId, gameState.value, playerScore, aiScore, winner, winnerScore)
+                val result = gameRepository.saveGameSummary(
+                    userId,
+                    gameState.value,
+                    playerScore,
+                    aiScore,
+                    winner,
+                    winnerScore
+                )
                 if (result.isSuccess) {
                     onSuccess()
                 } else {
@@ -159,8 +186,17 @@ class GameViewModel(private val gameRepository: GameRepository) : ViewModel() {
             if (gameState.value.board[row][col] == CellState.EMPTY ||
                 gameState.value.board[row][col] == CellState.SHIP ||
                 gameState.value.board[row][col] == CellState.MINE) {
+                // Save AI move
+                val move = Move(row, col, gameState.value.board[row][col], false)
+                saveMove(move)
                 return row to col
             }
         }
+    }
+
+    // Add a method to save player moves
+    fun savePlayerMove(row: Int, col: Int, result: CellState) {
+        val move = Move(row, col, result, true)
+        saveMove(move)
     }
 }

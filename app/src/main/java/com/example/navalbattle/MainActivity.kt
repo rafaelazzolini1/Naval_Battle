@@ -23,6 +23,7 @@ import com.example.navalbattle.ui.theme.screen.game.MenuViewModel
 import com.example.navalbattle.ui.theme.screen.login.LoginViewModel
 import com.example.navalbattle.util.LightSensorManager
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.firestore.FirebaseFirestore
 import com.naval.battle.data.repository.AuthRepository
 import com.naval.battle.data.repository.GameRepository
@@ -34,11 +35,7 @@ import com.naval.battle.data.repository.GameRepository
 class MainActivity : ComponentActivity() {
     // Lazily initialized repositories for authentication and game data
     private val authRepository by lazy { AuthRepository(FirebaseAuth.getInstance()) }
-    private val gameRepository by lazy {
-        GameRepository(
-            FirebaseFirestore.getInstance()
-        )
-    }
+    private val gameRepository = GameRepository(FirebaseFirestore.getInstance(), FirebaseDatabase.getInstance())
 
     // ViewModels for login, game, and menu screens, initialized with custom factories
     private val loginViewModel: LoginViewModel by viewModels { LoginViewModelFactory(authRepository) }

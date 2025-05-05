@@ -1,0 +1,66 @@
+[debug] [2025-04-25T20:22:44.084Z] ----------------------------------------------------------------------
+[debug] [2025-04-25T20:22:44.086Z] Command:       C:\Program Files\nodejs\node.exe C:\Users\rafaa\AppData\Roaming\npm\node_modules\firebase-tools\lib\bin\firebase.js init emulators
+[debug] [2025-04-25T20:22:44.087Z] CLI Version:   14.2.1
+[debug] [2025-04-25T20:22:44.087Z] Platform:      win32
+[debug] [2025-04-25T20:22:44.087Z] Node Version:  v22.14.0
+[debug] [2025-04-25T20:22:44.087Z] Time:          Fri Apr 25 2025 22:22:44 GMT+0200 (Horário de Verão da Europa Central)
+[debug] [2025-04-25T20:22:44.087Z] ----------------------------------------------------------------------
+[debug] 
+[debug] [2025-04-25T20:22:44.287Z] > command requires scopes: ["email","openid","https://www.googleapis.com/auth/cloudplatformprojects.readonly","https://www.googleapis.com/auth/firebase","https://www.googleapis.com/auth/cloud-platform"]
+[debug] [2025-04-25T20:22:44.287Z] > authorizing via signed-in user (rafaazzolini02@gmail.com)
+[info] 
+     ######## #### ########  ######## ########     ###     ######  ########
+     ##        ##  ##     ## ##       ##     ##  ##   ##  ##       ##
+     ######    ##  ########  ######   ########  #########  ######  ######
+     ##        ##  ##    ##  ##       ##     ## ##     ##       ## ##
+     ##       #### ##     ## ######## ########  ##     ##  ######  ########
+
+You're about to initialize a Firebase project in this directory:
+
+  C:\Users\rafaa\StudioProjects\Naval_Battle
+
+Before we get started, keep in mind:
+
+  * You are initializing within an existing Firebase project directory
+
+[debug] [2025-04-25T20:23:01.743Z] ----------------------------------------------------------------------
+[debug] [2025-04-25T20:23:01.745Z] Command:       C:\Program Files\nodejs\node.exe C:\Users\rafaa\AppData\Roaming\npm\node_modules\firebase-tools\lib\bin\firebase.js init emulators
+[debug] [2025-04-25T20:23:01.746Z] CLI Version:   14.2.1
+[debug] [2025-04-25T20:23:01.746Z] Platform:      win32
+[debug] [2025-04-25T20:23:01.746Z] Node Version:  v22.14.0
+[debug] [2025-04-25T20:23:01.746Z] Time:          Fri Apr 25 2025 22:23:01 GMT+0200 (Horário de Verão da Europa Central)
+[debug] [2025-04-25T20:23:01.746Z] ----------------------------------------------------------------------
+[debug] 
+[debug] [2025-04-25T20:23:01.937Z] > command requires scopes: ["email","openid","https://www.googleapis.com/auth/cloudplatformprojects.readonly","https://www.googleapis.com/auth/firebase","https://www.googleapis.com/auth/cloud-platform"]
+[debug] [2025-04-25T20:23:01.937Z] > authorizing via signed-in user (rafaazzolini02@gmail.com)
+[info] 
+     ######## #### ########  ######## ########     ###     ######  ########
+     ##        ##  ##     ## ##       ##     ##  ##   ##  ##       ##
+     ######    ##  ########  ######   ########  #########  ######  ######
+     ##        ##  ##    ##  ##       ##     ## ##     ##       ## ##
+     ##       #### ##     ## ######## ########  ##     ##  ######  ########
+
+You're about to initialize a Firebase project in this directory:
+
+  C:\Users\rafaa\StudioProjects\Naval_Battle
+
+Before we get started, keep in mind:
+
+  * You are initializing within an existing Firebase project directory
+
+[info] 
+=== Project Setup
+[info] 
+[info] First, let's associate this project directory with a Firebase project.
+[info] You can create multiple project aliases by running firebase use --add, 
+[info] but for now we'll just set up a default project.
+[info] 
+[debug] [2025-04-25T20:23:06.003Z] Using project from CLI flag: plataformaxarxes
+[debug] [2025-04-25T20:23:06.005Z] Checked if tokens are valid: true, expires at: 1745613922509
+[debug] [2025-04-25T20:23:06.005Z] Checked if tokens are valid: true, expires at: 1745613922509
+[debug] [2025-04-25T20:23:06.006Z] >>> [apiv2][query] GET https://firebase.googleapis.com/v1beta1/projects/plataformaxarxes [none]
+[debug] [2025-04-25T20:23:06.429Z] <<< [apiv2][status] GET https://firebase.googleapis.com/v1beta1/projects/plataformaxarxes 200
+[debug] [2025-04-25T20:23:06.429Z] <<< [apiv2][body] GET https://firebase.googleapis.com/v1beta1/projects/plataformaxarxes {"projectId":"plataformaxarxes","projectNumber":"365868890310","displayName":"PlataformaXarxes","name":"projects/plataformaxarxes","resources":{"hostingSite":"plataformaxarxes","realtimeDatabaseInstance":"plataformaxarxes-default-rtdb"},"state":"ACTIVE","etag":"1_9c78faa3-dbfc-49cd-afec-a34b93697816"}
+[info] i  Using project plataformaxarxes (PlataformaXarxes) 
+[info] 
+=== Emulators Setup

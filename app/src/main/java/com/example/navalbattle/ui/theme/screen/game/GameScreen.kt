@@ -81,12 +81,10 @@ fun GameScreen(
     val scrollState = rememberScrollState()
     val padding = if (isLandscape) 12.dp else 16.dp
     val spacerHeight = if (isLandscape) 8.dp else 16.dp
-    val buttonSpacerHeight = if (isLandscape) 6.dp else 12.dp
     val bottomSpacerHeight = if (isLandscape) 10.dp else 24.dp
     val topSpacerHeight = if (isLandscape) 32.dp else 48.dp
 
     val textStyle = if (isLandscape) MaterialTheme.typography.bodySmall else MaterialTheme.typography.bodyLarge
-    val buttonTextStyle = if (isLandscape) MaterialTheme.typography.labelMedium else MaterialTheme.typography.bodyMedium
     val dialogTitleStyle = if (isLandscape) MaterialTheme.typography.titleMedium else MaterialTheme.typography.headlineMedium
     val dialogTextStyle = if (isLandscape) MaterialTheme.typography.bodyMedium else MaterialTheme.typography.bodyLarge
 
@@ -172,6 +170,7 @@ fun GameScreen(
     fun handleCellClick(row: Int, col: Int) {
         if (winner != null || viewModel.isTimerPaused.value) return
         if (viewModel.gameState.value.board[row][col] == CellState.EMPTY) {
+            viewModel.savePlayerMove(row, col, CellState.MISS) // Save move
             viewModel.gameState.value = viewModel.gameState.value.copy(
                 board = viewModel.gameState.value.board.copyOf().apply { this[row][col] = CellState.MISS },
                 moves = mutableListOf<Move>().apply {
@@ -181,9 +180,9 @@ fun GameScreen(
                 playerTurn = false
             )
         } else if (viewModel.gameState.value.board[row][col] == CellState.SHIP) {
+            viewModel.savePlayerMove(row, col, CellState.HIT) // Save move
             val newBoard = viewModel.gameState.value.board.copyOf().apply { this[row][col] = CellState.HIT }
-            val newMoves = mutableListOf<Move>().apply {
-                addAll(viewModel.gameState.value.moves)
+            val newMoves = viewModel.gameState.value.moves.toMutableList().apply {
                 add(Move(row, col, CellState.HIT, true))
             }
 
@@ -247,9 +246,9 @@ fun GameScreen(
                 playerTurn = false
             )
         } else if (viewModel.gameState.value.board[row][col] == CellState.MINE) {
+            viewModel.savePlayerMove(row, col, CellState.MINE) // Save move
             val newBoard = viewModel.gameState.value.board.copyOf().apply { this[row][col] = CellState.MINE }
-            val newMoves = mutableListOf<Move>().apply {
-                addAll(viewModel.gameState.value.moves)
+            val newMoves = viewModel.gameState.value.moves.toMutableList().apply {
                 add(Move(row, col, CellState.MINE, true))
             }
             viewModel.gameState.value = viewModel.gameState.value.copy(
@@ -694,7 +693,7 @@ fun GameScreen(
     if (showGameOverDialog) {
         LaunchedEffect(Unit) {
             delay(1000L)
-            // After 3 seconds, keep dialog open for user interaction
+            // After 1 second, keep dialog open for user interaction
         }
 
         AlertDialog(
@@ -774,7 +773,7 @@ fun GameScreen(
         LaunchedEffect(Unit) {
             val (row, col) = viewModel.aiTurn()
             val newBoard = viewModel.gameState.value.board.copyOf()
-            val newMoves = mutableListOf<Move>().apply { addAll(viewModel.gameState.value.moves) }
+            val newMoves = viewModel.gameState.value.moves.toMutableList()
 
             if (viewModel.gameState.value.board[row][col] == CellState.SHIP) {
                 newBoard[row][col] = CellState.HIT
