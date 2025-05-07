@@ -1,0 +1,55 @@
+<resources>
+    <string name="app_name">Batalla Naval</string>
+    <string name="welcome_message">¡Bienvenido a Batalla Naval!</string>
+    <string name="login_button">Iniciar sesión</string>
+    <string name="theme_toggle">Cambiar tema</string>
+
+    <!--    Login-->
+    <string name="login_email_placeholder">Introduce tu correo electrónico</string>
+    <string name="login_password_placeholder">Introduce tu contraseña</string>
+    <string name="forgot_password">¿Olvidaste tu contraseña?</string>
+    <string name="login">Iniciar sesión</string>
+    <string name="register">Registrarse</string>
+    <string name="reset_password">Restablecer contraseña</string>
+    <string name="reset_password_instruction">Ingresa tu correo electrónico para recibir un enlace para restablecer tu contraseña.</string>
+    <string name="email">Correo electrónico</string>
+    <string name="send_reset_link">Enviar enlace para restablecer tu contraseña</string>
+    <string name="cancel">Cancelar</string>
+
+
+    <!-- Strings for the game screen -->
+    <string name="game_player_label">Jugador:</string>
+    <string name="game_resume">Reanudar</string>
+    <string name="game_pause">Pausar</string>
+    <string name="game_logout">Cerrar sesión</string>
+    <string name="game_player_score_label">Jugador:</string>
+    <string name="game_ai_score_label">IA:</string>
+    <string name="game_remaining_ships_label">Barcos restantes:</string>
+    <string name="game_sunk_ships_label">Barcos hundidos:</string>
+    <string name="game_sunk_by_label">Hundido por</string>
+    <string name="game_none">Ninguno</string>
+    <string name="game_remaining_ships_title">Barcos restantes:</string>
+    <string name="game_time_remaining_label">Tiempo restante:</string>
+    <string name="game_restart">Reiniciar juego</string>
+
+    <!-- Strings for the game over dialog -->
+    <string name="game_victory_title">¡Victoria lograda!</string>
+    <string name="game_defeat_title">¡Batalla perdida!</string>
+    <string name="game_victory_message">¡Felicidades! Hundiste todos los barcos enemigos con %1$d puntos.</string>
+    <string name="game_defeat_message">La IA ha prevalecido, hundiendo todos tus barcos con %1$d puntos.</string>
+    <string name="game_defeat_by_mine_message">¡Oh no! Golpeaste una mina y perdiste la batalla. La IA gana con %1$d puntos.</string>
+    <string name="game_victory_by_mine_message">¡La IA activó una mina! Ganaste con %1$d puntos.</string>
+    <string name="game_save_success">¡Juego y movimientos guardados con éxito! Se ha enviado un correo de confirmación con el ganador.</string>
+    <string name="game_save_error">Error al guardar el juego:</string>
+    <string name="game_dialog_logout">Cerrar sesión</string>
+    <string name="game_dialog_restart">Reiniciar</string>
+
+    <!-- Novas strings para GameViewModel.kt -->
+    <string name="game_ship_aircraft_carrier">Portaaviones</string>
+    <string name="game_ship_battleship">Acorazado</string>
+    <string name="game_ship_cruiser">Crucero</string>
+    <string name="game_ship_submarine">Submarino</string>
+    <string name="game_ship_destroyer">Destructor</string>
+    <string name="game_error_saving_game">Error al guardar el juego</string>
+    <string name="game_error_user_not_authenticated">¡Usuario no autenticado!</string>
+</resources>

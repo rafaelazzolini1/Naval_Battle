@@ -45,6 +45,7 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
@@ -122,7 +123,8 @@ fun GameScreen(
 
     var winner by rememberSaveable { mutableStateOf<String?>(null) }
     var showGameOverDialog by rememberSaveable { mutableStateOf(false) }
-    var gameOverMessage by rememberSaveable { mutableStateOf("") }
+    var gameOverMessageId by rememberSaveable { mutableStateOf<Int?>(null) } // Armazena o ID da string
+    var gameOverArgs by rememberSaveable { mutableStateOf<List<Any>?>(null) } // Argumentos para formatação
     var gameEndedByMine by rememberSaveable { mutableStateOf(false) }
     var saveStatus by remember { mutableStateOf<String?>(null) }
 
@@ -170,7 +172,7 @@ fun GameScreen(
     fun handleCellClick(row: Int, col: Int) {
         if (winner != null || viewModel.isTimerPaused.value) return
         if (viewModel.gameState.value.board[row][col] == CellState.EMPTY) {
-            viewModel.savePlayerMove(row, col, CellState.MISS) // Save move
+            viewModel.savePlayerMove(row, col, CellState.MISS)
             viewModel.gameState.value = viewModel.gameState.value.copy(
                 board = viewModel.gameState.value.board.copyOf().apply { this[row][col] = CellState.MISS },
                 moves = mutableListOf<Move>().apply {
@@ -180,7 +182,7 @@ fun GameScreen(
                 playerTurn = false
             )
         } else if (viewModel.gameState.value.board[row][col] == CellState.SHIP) {
-            viewModel.savePlayerMove(row, col, CellState.HIT) // Save move
+            viewModel.savePlayerMove(row, col, CellState.HIT)
             val newBoard = viewModel.gameState.value.board.copyOf().apply { this[row][col] = CellState.HIT }
             val newMoves = viewModel.gameState.value.moves.toMutableList().apply {
                 add(Move(row, col, CellState.HIT, true))
@@ -221,11 +223,8 @@ fun GameScreen(
 
             if (viewModel.gameState.value.ships.all { it.isSunk }) {
                 winner = if (isSunk) "Player" else "AI"
-                gameOverMessage = if (isSunk) {
-                    "Congratulations! You sank all enemy ships with $playerScore points!"
-                } else {
-                    "The AI has prevailed, sinking all your ships with $aiScore points!"
-                }
+                gameOverMessageId = if (isSunk) R.string.game_victory_message else R.string.game_defeat_message
+                gameOverArgs = listOf(if (isSunk) playerScore else aiScore)
                 gameEndedByMine = false
                 showGameOverDialog = true
                 playGameOverSound(false)
@@ -234,8 +233,8 @@ fun GameScreen(
                     aiScore = aiScore,
                     winner = winner,
                     winnerScore = if (winner != null) (if (viewModel.gameState.value.lastSunkByPlayer) playerScore else aiScore) else 0,
-                    onSuccess = { saveStatus = "Game and moves saved successfully! A confirmation email with the winner has been sent." },
-                    onError = { error -> saveStatus = "Error saving game: $error" }
+                    onSuccess = { saveStatus = "game_save_success" }, // Passa a chave como String
+                    onError = { error -> saveStatus = error } // Passa a mensagem de erro como String
                 )
             }
 
@@ -246,7 +245,7 @@ fun GameScreen(
                 playerTurn = false
             )
         } else if (viewModel.gameState.value.board[row][col] == CellState.MINE) {
-            viewModel.savePlayerMove(row, col, CellState.MINE) // Save move
+            viewModel.savePlayerMove(row, col, CellState.MINE)
             val newBoard = viewModel.gameState.value.board.copyOf().apply { this[row][col] = CellState.MINE }
             val newMoves = viewModel.gameState.value.moves.toMutableList().apply {
                 add(Move(row, col, CellState.MINE, true))
@@ -257,7 +256,8 @@ fun GameScreen(
                 playerTurn = false
             )
             winner = "AI"
-            gameOverMessage = "Oh no! You hit a mine and lost the battle. The AI wins with $aiScore points!"
+            gameOverMessageId = R.string.game_defeat_by_mine_message
+            gameOverArgs = listOf(aiScore)
             gameEndedByMine = true
             showGameOverDialog = true
             playGameOverSound(true)
@@ -344,7 +344,7 @@ fun GameScreen(
                         horizontalAlignment = Alignment.CenterHorizontally
                     ) {
                         Text(
-                            text = "Player: $userEmail",
+                            text = "${stringResource(id = R.string.game_player_label)} $userEmail",
                             style = MaterialTheme.typography.titleMedium,
                             color = textColor,
                             maxLines = 1,
@@ -356,7 +356,7 @@ fun GameScreen(
                             horizontalArrangement = Arrangement.spacedBy(12.dp)
                         ) {
                             Text(
-                                text = if (viewModel.isTimerPaused.value) "Resume" else "Pause",
+                                text = if (viewModel.isTimerPaused.value) stringResource(id = R.string.game_resume) else stringResource(id = R.string.game_pause),
                                 style = MaterialTheme.typography.labelMedium,
                                 color = if (winner == null) textColor else textColor.copy(alpha = 0.5f),
                                 modifier = Modifier
@@ -369,7 +369,7 @@ fun GameScreen(
                                     .clickable(enabled = winner == null) { viewModel.toggleTimerPause() }
                             )
                             Text(
-                                text = "Log Out",
+                                text = stringResource(id = R.string.game_logout),
                                 style = MaterialTheme.typography.labelMedium,
                                 color = logoutButtonColor,
                                 modifier = Modifier
@@ -404,40 +404,40 @@ fun GameScreen(
                             horizontalAlignment = Alignment.Start
                         ) {
                             Text(
-                                text = "Player: $playerScore",
+                                text = "${stringResource(id = R.string.game_player_score_label)} $playerScore",
                                 color = textColor,
                                 style = textStyle
                             )
                             Spacer(modifier = Modifier.height(4.dp))
                             Text(
-                                text = "AI: $aiScore",
+                                text = "${stringResource(id = R.string.game_ai_score_label)} $aiScore",
                                 color = textColor,
                                 style = textStyle
                             )
                             Spacer(modifier = Modifier.height(4.dp))
                             Text(
-                                text = "Remaining Ships: $remainingShips",
+                                text = "${stringResource(id = R.string.game_remaining_ships_label)} $remainingShips",
                                 color = textColor,
                                 style = textStyle
                             )
                             Spacer(modifier = Modifier.height(4.dp))
 
                             Text(
-                                text = "Sunk Ships:",
+                                text = stringResource(id = R.string.game_sunk_ships_label),
                                 color = textColor,
                                 style = textStyle.copy(fontSize = if (isLandscape) 10.sp else 14.sp)
                             )
                             viewModel.gameState.value.ships.filter { it.isSunk }.forEach { ship ->
                                 val sunkBy = if (viewModel.gameState.value.lastSunkByPlayer) "Player" else "AI"
                                 Text(
-                                    text = "- ${ship.name} (Sunk by $sunkBy)",
+                                    text = "- ${ship.name} (${stringResource(id = R.string.game_sunk_by_label)} $sunkBy)",
                                     color = textColor,
                                     style = textStyle.copy(fontSize = if (isLandscape) 8.sp else 12.sp)
                                 )
                             }
                             if (viewModel.gameState.value.ships.none { it.isSunk }) {
                                 Text(
-                                    text = "None",
+                                    text = stringResource(id = R.string.game_none),
                                     color = textColor,
                                     style = textStyle.copy(fontSize = if (isLandscape) 8.sp else 12.sp)
                                 )
@@ -446,7 +446,7 @@ fun GameScreen(
                             Spacer(modifier = Modifier.height(4.dp))
 
                             Text(
-                                text = "Remaining Ships:",
+                                text = stringResource(id = R.string.game_remaining_ships_title),
                                 color = textColor,
                                 style = textStyle.copy(fontSize = if (isLandscape) 10.sp else 14.sp)
                             )
@@ -459,7 +459,7 @@ fun GameScreen(
                             }
                             if (viewModel.gameState.value.ships.all { it.isSunk }) {
                                 Text(
-                                    text = "None",
+                                    text = stringResource(id = R.string.game_none),
                                     color = textColor,
                                     style = textStyle.copy(fontSize = if (isLandscape) 8.sp else 12.sp)
                                 )
@@ -474,7 +474,7 @@ fun GameScreen(
                                         .fillMaxWidth()
                                 ) {
                                     Text(
-                                        text = "Time Remaining: $timeLeft s",
+                                        text = "${stringResource(id = R.string.game_time_remaining_label)} $timeLeft s",
                                         color = if (timeLeft <= 3) Color.Red else textColor,
                                         style = textStyle.copy(fontSize = if (isLandscape) 10.sp else 14.sp)
                                     )
@@ -486,7 +486,7 @@ fun GameScreen(
                     Spacer(modifier = Modifier.height(spacerHeight))
 
                     CustomButton(
-                        text = "Restart Game",
+                        text = stringResource(id = R.string.game_restart),
                         onClick = {
                             navController.navigate("menu")
                             winner = null
@@ -517,7 +517,7 @@ fun GameScreen(
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
                     Text(
-                        text = "Player: $userEmail",
+                        text = "${stringResource(id = R.string.game_player_label)} $userEmail",
                         style = MaterialTheme.typography.titleLarge,
                         color = textColor,
                         maxLines = 1,
@@ -529,7 +529,7 @@ fun GameScreen(
                         horizontalArrangement = Arrangement.spacedBy(12.dp)
                     ) {
                         Text(
-                            text = if (viewModel.isTimerPaused.value) "Resume" else "Pause",
+                            text = if (viewModel.isTimerPaused.value) stringResource(id = R.string.game_resume) else stringResource(id = R.string.game_pause),
                             style = MaterialTheme.typography.bodyMedium,
                             color = if (winner == null) textColor else textColor.copy(alpha = 0.5f),
                             modifier = Modifier
@@ -542,7 +542,7 @@ fun GameScreen(
                                 .clickable(enabled = winner == null) { viewModel.toggleTimerPause() }
                         )
                         Text(
-                            text = "Log Out",
+                            text = stringResource(id = R.string.game_logout),
                             style = MaterialTheme.typography.bodyMedium,
                             color = logoutButtonColor,
                             modifier = Modifier
@@ -581,17 +581,17 @@ fun GameScreen(
                             horizontalArrangement = Arrangement.SpaceEvenly
                         ) {
                             Text(
-                                text = "Player: $playerScore",
+                                text = "${stringResource(id = R.string.game_player_score_label)} $playerScore",
                                 color = textColor,
                                 style = textStyle
                             )
                             Text(
-                                text = "AI: $aiScore",
+                                text = "${stringResource(id = R.string.game_ai_score_label)} $aiScore",
                                 color = textColor,
                                 style = textStyle
                             )
                             Text(
-                                text = "Ships: $remainingShips",
+                                text = "${stringResource(id = R.string.game_remaining_ships_label)} $remainingShips",
                                 color = textColor,
                                 style = textStyle
                             )
@@ -600,19 +600,19 @@ fun GameScreen(
                         Spacer(modifier = Modifier.height(8.dp))
 
                         Text(
-                            text = "Sunk Ships:",
+                            text = stringResource(id = R.string.game_sunk_ships_label),
                             color = textColor,
                         )
                         viewModel.gameState.value.ships.filter { it.isSunk }.forEach { ship ->
                             val sunkBy = if (viewModel.gameState.value.lastSunkByPlayer) "Player" else "AI"
                             Text(
-                                text = "- ${ship.name} (Sunk by $sunkBy)",
+                                text = "- ${ship.name} (${stringResource(id = R.string.game_sunk_by_label)} $sunkBy)",
                                 color = textColor,
                             )
                         }
                         if (viewModel.gameState.value.ships.none { it.isSunk }) {
                             Text(
-                                text = "None",
+                                text = stringResource(id = R.string.game_none),
                                 color = textColor,
                             )
                         }
@@ -620,7 +620,7 @@ fun GameScreen(
                         Spacer(modifier = Modifier.height(4.dp))
 
                         Text(
-                            text = "Remaining Ships:",
+                            text = stringResource(id = R.string.game_remaining_ships_title),
                             color = textColor,
                         )
                         viewModel.gameState.value.ships.filterNot { it.isSunk }.forEach { ship ->
@@ -631,7 +631,7 @@ fun GameScreen(
                         }
                         if (viewModel.gameState.value.ships.all { it.isSunk }) {
                             Text(
-                                text = "None",
+                                text = stringResource(id = R.string.game_none),
                                 color = textColor,
                             )
                         }
@@ -645,7 +645,7 @@ fun GameScreen(
                                     .fillMaxWidth()
                             ) {
                                 Text(
-                                    text = "Time Remaining: $timeLeft s",
+                                    text = "${stringResource(id = R.string.game_time_remaining_label)} $timeLeft s",
                                     color = if (timeLeft <= 3) Color.Red else textColor,
                                 )
                             }
@@ -673,7 +673,7 @@ fun GameScreen(
                 Spacer(modifier = Modifier.height(spacerHeight))
 
                 CustomButton(
-                    text = "Restart Game",
+                    text = stringResource(id = R.string.game_restart),
                     onClick = {
                         navController.navigate("menu")
                         winner = null
@@ -693,14 +693,13 @@ fun GameScreen(
     if (showGameOverDialog) {
         LaunchedEffect(Unit) {
             delay(1000L)
-            // After 1 second, keep dialog open for user interaction
         }
 
         AlertDialog(
-            onDismissRequest = { }, // Prevent dismissing by clicking outside
+            onDismissRequest = { },
             title = {
                 Text(
-                    text = if (winner == "Player") "Victory Achieved!" else "Battle Lost!",
+                    text = if (winner == "Player") stringResource(id = R.string.game_victory_title) else stringResource(id = R.string.game_defeat_title),
                     style = dialogTitleStyle,
                     color = if (winner == "Player") Color(0xFF4CAF50) else Color(0xFFD32F2F),
                     textAlign = TextAlign.Center,
@@ -713,7 +712,7 @@ fun GameScreen(
                     modifier = Modifier.fillMaxWidth()
                 ) {
                     Text(
-                        text = gameOverMessage,
+                        text = gameOverMessageId?.let { stringResource(id = it, *gameOverArgs?.toTypedArray() ?: emptyArray()) } ?: "",
                         style = dialogTextStyle,
                         textAlign = TextAlign.Center,
                         color = textColor
@@ -723,7 +722,7 @@ fun GameScreen(
                         Text(
                             text = it,
                             style = dialogTextStyle.copy(fontSize = 14.sp),
-                            color = if (it.contains("Error")) Color.Red else Color(0xFF4CAF50),
+                            color = if (it.contains(stringResource(id = R.string.game_save_error))) Color.Red else Color(0xFF4CAF50),
                             textAlign = TextAlign.Center
                         )
                     }
@@ -732,7 +731,7 @@ fun GameScreen(
 
             dismissButton = {
                 CustomButton(
-                    text = "Log Out",
+                    text = stringResource(id = R.string.game_dialog_logout),
                     onClick = {
                         viewModel.resetGame(5)
                         FirebaseAuth.getInstance().signOut()
@@ -749,7 +748,7 @@ fun GameScreen(
 
             confirmButton = {
                 CustomButton(
-                    text = "Restart",
+                    text = stringResource(id = R.string.game_dialog_restart),
                     onClick = {
                         navController.navigate("menu")
                         winner = null
@@ -814,11 +813,8 @@ fun GameScreen(
 
                 if (viewModel.gameState.value.ships.all { it.isSunk }) {
                     winner = if (isSunk) "Player" else "AI"
-                    gameOverMessage = if (isSunk) {
-                        "Congratulations! You sank all enemy ships with $playerScore points!"
-                    } else {
-                        "The AI has prevailed, sinking all your ships with $aiScore points!"
-                    }
+                    gameOverMessageId = if (isSunk) R.string.game_victory_message else R.string.game_defeat_message
+                    gameOverArgs = listOf(if (isSunk) playerScore else aiScore)
                     gameEndedByMine = false
                     showGameOverDialog = true
                     playGameOverSound(false)
@@ -827,8 +823,8 @@ fun GameScreen(
                         aiScore = aiScore,
                         winner = winner,
                         winnerScore = if (winner != null) (if (viewModel.gameState.value.lastSunkByPlayer) playerScore else aiScore) else 0,
-                        onSuccess = { saveStatus = "Game and moves saved successfully! A confirmation email with the winner has been sent." },
-                        onError = { error -> saveStatus = "Error saving game: $error" }
+                        onSuccess = { saveStatus = "game_save_success" }, // Passa a chave como String
+                        onError = { error -> saveStatus = error } // Passa a mensagem de erro como String
                     )
                 }
 
@@ -849,7 +845,8 @@ fun GameScreen(
                     playerTurn = true
                 )
                 winner = "Player"
-                gameOverMessage = "The AI triggered a mine! You win with $playerScore points!"
+                gameOverMessageId = R.string.game_victory_by_mine_message
+                gameOverArgs = listOf(playerScore)
                 gameEndedByMine = true
                 showGameOverDialog = true
                 playGameOverSound(true)

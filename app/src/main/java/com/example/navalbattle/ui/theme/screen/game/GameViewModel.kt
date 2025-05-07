@@ -99,8 +99,8 @@ class GameViewModel(private val gameRepository: GameRepository) : ViewModel() {
         aiScore: Int,
         winner: String?,
         winnerScore: Int,
-        onSuccess: () -> Unit,
-        onError: (String) -> Unit
+        onSuccess: () -> Unit, // Removido @Composable
+        onError: (String) -> Unit // Removido @Composable
     ) {
         viewModelScope.launch {
             val userId = FirebaseAuth.getInstance().currentUser?.uid
@@ -116,10 +116,10 @@ class GameViewModel(private val gameRepository: GameRepository) : ViewModel() {
                 if (result.isSuccess) {
                     onSuccess()
                 } else {
-                    onError(result.exceptionOrNull()?.message ?: "Error saving game")
+                    onError(result.exceptionOrNull()?.message ?: "game_error_saving_game")
                 }
             } else {
-                onError("User not authenticated!")
+                onError("game_error_user_not_authenticated")
             }
         }
     }
@@ -194,7 +194,6 @@ class GameViewModel(private val gameRepository: GameRepository) : ViewModel() {
         }
     }
 
-    // Add a method to save player moves
     fun savePlayerMove(row: Int, col: Int, result: CellState) {
         val move = Move(row, col, result, true)
         saveMove(move)

@@ -41,6 +41,7 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
@@ -111,8 +112,8 @@ fun LoginScreen(
 
             // App name
             Text(
-                text = "Naval Battle",
-                style = MaterialTheme.typography.headlineMedium.copy(
+                    text = stringResource(id = R.string.app_name),
+                    style = MaterialTheme.typography.headlineMedium.copy(
                     fontSize = titleSize,
                     fontWeight = FontWeight.Bold
                 ),
@@ -123,7 +124,7 @@ fun LoginScreen(
             CustomTextField(
                 value = viewModel.email.value,
                 onValueChange = { viewModel.email.value = it },
-                label = "Enter your email",
+                label = stringResource(id = R.string.login_email_placeholder),
                 isLightTheme = isLightTheme,
                 isError = viewModel.emailError.value,
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email),
@@ -136,7 +137,7 @@ fun LoginScreen(
             PasswordTextField(
                 value = viewModel.password.value,
                 onValueChange = { viewModel.password.value = it },
-                label = "Enter your password",
+                label = stringResource(id = R.string.login_password_placeholder),
                 isLightTheme = isLightTheme,
                 isError = viewModel.passwordError.value,
                 passwordVisible = passwordVisible,
@@ -151,7 +152,7 @@ fun LoginScreen(
                     .padding(top = 4.dp, bottom = 4.dp)
             ) {
                 Text(
-                    text = "Forgot Password?",
+                    text = stringResource(id = R.string.forgot_password),
                     color = if (isLightTheme) MaterialTheme.colorScheme.primary else Color(0xFF90CAF9),
                     style = textStyle,
                     textDecoration = TextDecoration.Underline,
@@ -166,7 +167,7 @@ fun LoginScreen(
             Spacer(modifier = Modifier.height(buttonSpacerHeight))
 
             CustomButton(
-                text = "Login",
+                text = stringResource(id = R.string.login),
                 onClick = {
                     viewModel.signIn {
                         navController.navigate("menu") {
@@ -181,7 +182,7 @@ fun LoginScreen(
             Spacer(modifier = Modifier.height(spacerHeight))
 
             CustomButton(
-                text = "Register",
+                text = stringResource(id = R.string.register),
                 onClick = {
                     viewModel.registerWithEmailVerification { success ->
                         if (success) {}
@@ -241,15 +242,15 @@ fun LoginScreen(
         if (showPasswordResetDialog) {
             AlertDialog(
                 onDismissRequest = { showPasswordResetDialog = false },
-                title = { Text("Reset Password") },
+                title = { Text(text = stringResource(id = R.string.reset_password)) },
                 text = {
                     Column {
-                        Text("Enter your email address to receive a password reset link.")
+                        Text(text = stringResource(id = R.string.reset_password_instruction))
                         Spacer(modifier = Modifier.height(8.dp))
                         OutlinedTextField(
                             value = resetEmail,
                             onValueChange = { resetEmail = it },
-                            label = { Text("Email") },
+                            label = { Text(text = stringResource(id = R.string.reset_password_instruction)) },
                             singleLine = true,
                             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email),
                             modifier = Modifier.fillMaxWidth()
@@ -266,14 +267,14 @@ fun LoginScreen(
                             }
                         }
                     ) {
-                        Text("Send Reset Link")
+                        Text(text = stringResource(id = R.string.send_reset_link))
                     }
                 },
                 dismissButton = {
                     TextButton(
                         onClick = { showPasswordResetDialog = false }
                     ) {
-                        Text("Cancel")
+                        Text(text = stringResource(id = R.string.cancel))
                     }
                 }
             )
