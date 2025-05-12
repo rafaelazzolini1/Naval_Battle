@@ -1,6 +1,7 @@
 const express = require("express");
 const nodemailer = require("nodemailer");
 const app = express();
+
 app.use(express.json());
 
 const transporter = nodemailer.createTransport({
@@ -21,13 +22,12 @@ app.post("/send-email", async (req, res) => {
       subject,
       html
     });
-
     res.status(200).send({ success: true, message: "E-mail enviado!" });
   } catch (error) {
-    console.error("Erro:", error);
+    console.error(error);
     res.status(500).send({ success: false, message: "Erro ao enviar e-mail." });
   }
 });
 
-const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => console.log("Servidor rodando na porta", PORT));
+const PORT = process.env.PORT || 10000;
+app.listen(PORT, () => console.log(`Servidor rodando na porta ${PORT}`));

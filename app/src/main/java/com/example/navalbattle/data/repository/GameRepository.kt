@@ -9,6 +9,14 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.firestore.FirebaseFirestore
 import kotlinx.coroutines.tasks.await
+import okhttp3.MediaType.Companion.toMediaTypeOrNull
+import okhttp3.OkHttpClient
+import okhttp3.Request
+import okhttp3.RequestBody
+import okhttp3.Callback
+import okhttp3.Call
+import okhttp3.Response
+import java.io.IOException
 import java.time.Instant
 import java.util.UUID
 
@@ -20,14 +28,6 @@ class GameRepository(
         private const val TAG = "GameRepository"
     }
 
-    /**
-     * Saves a single move to the Realtime Database in real-time.
-     *
-     * @param userId The authenticated user's ID
-     * @param matchId The unique ID of the match
-     * @param move The move to save
-     * @return Result<Unit> indicating success or failure
-     */
     suspend fun saveMove(
         userId: String,
         matchId: String,
@@ -60,17 +60,6 @@ class GameRepository(
         }
     }
 
-    /**
-     * Saves the game summary to Firestore when the game ends, excluding moves.
-     *
-     * @param userId The authenticated user's ID
-     * @param gameState The final game state
-     * @param playerScore The player's score
-     * @param aiScore The AI's score
-     * @param winner The winner of the game
-     * @param winnerScore The winner's score
-     * @return Result<Unit> indicating success or failure
-     */
     @RequiresApi(Build.VERSION_CODES.O)
     suspend fun saveGameSummary(
         userId: String,
@@ -83,6 +72,42 @@ class GameRepository(
         return try {
             val totalMoves = gameState.moves.size
             val userEmail = FirebaseAuth.getInstance().currentUser?.email ?: "unknown@example.com"
+
+            Log.d(TAG, "🎯 Comparando winner=$winner com userId=$userId")
+
+            // Envio do e-mail se o jogador for o vencedor
+            if (winner === "Player") {
+                val json = """
+                    {
+                      "to": "$userEmail",
+                      "subject": "Parabéns! Você venceu o Naval Battle!",
+                      "html": "<h2>Você venceu!</h2><p>Pontuação: $winnerScore</p><p>Total de movimentos: $totalMoves</p>"
+                    }
+                """.trimIndent()
+
+                val client = OkHttpClient()
+                val requestBody = RequestBody.create(
+                    "application/json".toMediaTypeOrNull(),
+                    json
+                )
+
+                val request = Request.Builder()
+                    .url("https://naval-battle-xxsc.onrender.com/send-email")
+                    .post(requestBody)
+                    .addHeader("Content-Type", "application/json")
+                    .build()
+
+                client.newCall(request).enqueue(object : Callback {
+                    override fun onFailure(call: Call, e: IOException) {
+                        Log.e(TAG, "Erro ao enviar e-mail: ${e.message}", e)
+                    }
+
+                    override fun onResponse(call: Call, response: Response) {
+                        Log.d(TAG, "Resposta do envio de e-mail: ${response.code}")
+                    }
+                })
+            }
+
             val gameData = hashMapOf(
                 "winner" to (winner ?: "None"),
                 "winnerScore" to winnerScore,
