@@ -48,6 +48,9 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.google.firebase.auth.FirebaseAuth
 import com.naval.battle.ui.component.CustomButton
+import androidx.compose.ui.res.stringResource
+import com.example.navalbattle.R
+
 
 @Composable
 fun MenuScreen(
@@ -123,7 +126,7 @@ fun MenuScreen(
                 Spacer(modifier = Modifier.height(16.dp))
 
                 Text(
-                    text = "Game Settings",
+                    text = stringResource(R.string.menu_game_settings),
                     style = titleStyle,
                     color = textColor,
                     fontWeight = FontWeight.Bold,
@@ -145,13 +148,13 @@ fun MenuScreen(
                         horizontalAlignment = Alignment.Start
                     ) {
                         Text(
-                            text = "Number of Mines (1-10)",
+                            text = stringResource(R.string.menu_number_of_mines),
                             style = textStyle,
                             color = textColor,
                             modifier = Modifier.padding(bottom = 6.dp)
                         )
                         Text(
-                            text = "Default: 5 mines",
+                            text = stringResource(R.string.menu_default_mines),
                             style = MaterialTheme.typography.bodySmall,
                             color = textColor.copy(alpha = 0.7f),
                             modifier = Modifier.padding(bottom = 6.dp)
@@ -174,13 +177,13 @@ fun MenuScreen(
                         Spacer(modifier = Modifier.height(12.dp))
 
                         Text(
-                            text = "Timer Duration (1-10 seconds)",
+                            text = stringResource(R.string.menu_timer_duration),
                             style = textStyle,
                             color = textColor,
                             modifier = Modifier.padding(bottom = 6.dp)
                         )
                         Text(
-                            text = "Default: 7 seconds",
+                            text = stringResource(R.string.menu_default_timer),
                             style = MaterialTheme.typography.bodySmall,
                             color = textColor.copy(alpha = 0.7f),
                             modifier = Modifier.padding(bottom = 6.dp)
@@ -216,7 +219,7 @@ fun MenuScreen(
                     horizontalArrangement = Arrangement.SpaceEvenly
                 ) {
                     CustomButton(
-                        text = "Start Game",
+                        text = stringResource(R.string.menu_start_game),
                         onClick = {
                             val numberOfMines = menuViewModel.minesInput.toIntOrNull() ?: 5
                             val validMines = numberOfMines.coerceIn(1, 10)
@@ -236,7 +239,7 @@ fun MenuScreen(
                     Spacer(modifier = Modifier.width(8.dp))
 
                     CustomButton(
-                        text = "How to Play",
+                        text = stringResource(R.string.menu_how_to_play),
                         onClick = {
                             showTutorialDialog = true
                             vibrateDevice()
@@ -251,7 +254,7 @@ fun MenuScreen(
                 Spacer(modifier = Modifier.height(8.dp))
 
                 CustomButton(
-                    text = "Log Out",
+                    text = stringResource(R.string.menu_logout),
                     onClick = {
                         FirebaseAuth.getInstance().signOut()
                         navController.navigate("login") {
@@ -271,7 +274,7 @@ fun MenuScreen(
                 onDismissRequest = { showTutorialDialog = false },
                 title = {
                     Text(
-                        text = "How to Play Naval Battle",
+                        text = stringResource(R.string.tutorial_title),
                         style = dialogTitleStyle,
                         color = textColor,
                         textAlign = TextAlign.Center,
@@ -287,68 +290,60 @@ fun MenuScreen(
                         horizontalAlignment = Alignment.Start
                     ) {
                         Text(
-                            text = "Objective:",
+                            text = stringResource(R.string.tutorial_objective_title),
                             style = dialogTextStyle.copy(fontWeight = FontWeight.Bold),
                             color = textColor
                         )
                         Text(
-                            text = "Sink all enemy ships before they sink yours or you hit a mine!",
+                            text = stringResource(R.string.tutorial_objective_text),
                             style = dialogTextStyle,
                             color = textColor
                         )
                         Spacer(modifier = Modifier.height(8.dp))
 
                         Text(
-                            text = "Gameplay:",
+                            text = stringResource(R.string.tutorial_gameplay_title),
                             style = dialogTextStyle.copy(fontWeight = FontWeight.Bold),
                             color = textColor
                         )
                         Text(
-                            text = "- The game is played on a 10x10 grid.\n" +
-                                    "- You and the AI take turns selecting grid cells.\n" +
-                                    "- Each turn has a timer (default 7 seconds). If time runs out, a random cell is chosen.\n" +
-                                    "- Cells can contain ships, mines, or be empty.",
+                            text = stringResource(R.string.tutorial_gameplay_text),
                             style = dialogTextStyle,
                             color = textColor
                         )
                         Spacer(modifier = Modifier.height(8.dp))
 
                         Text(
-                            text = "Cell Types:",
+                            text = stringResource(R.string.tutorial_cell_types_title),
                             style = dialogTextStyle.copy(fontWeight = FontWeight.Bold),
                             color = textColor
                         )
                         Text(
-                            text = "- Ship: Hit to damage enemy ships. Sink all to win!\n" +
-                                    "- Mine: Hitting a mine ends the game with your loss.\n" +
-                                    "- Empty: Results in a miss, no effect.",
+                            text = stringResource(R.string.tutorial_cell_types_text),
                             style = dialogTextStyle,
                             color = textColor
                         )
                         Spacer(modifier = Modifier.height(8.dp))
 
                         Text(
-                            text = "Scoring:",
+                            text = stringResource(R.string.tutorial_scoring_title),
                             style = dialogTextStyle.copy(fontWeight = FontWeight.Bold),
                             color = textColor
                         )
                         Text(
-                            text = "- Earn points for each ship cell hit.\n" +
-                                    "- The game saves your progress and sends a winner announcement email.",
+                            text = stringResource(R.string.tutorial_scoring_text),
                             style = dialogTextStyle,
                             color = textColor
                         )
                         Spacer(modifier = Modifier.height(8.dp))
 
                         Text(
-                            text = "Controls:",
+                            text = stringResource(R.string.tutorial_controls_title),
                             style = dialogTextStyle.copy(fontWeight = FontWeight.Bold),
                             color = textColor
                         )
                         Text(
-                            text = "- Tap a grid cell to attack.\n" +
-                                    "- Use the Pause button to pause the timer.\n" +
-                                    "- Restart or log out from the game screen.",
+                            text = stringResource(R.string.tutorial_controls_text),
                             style = dialogTextStyle,
                             color = textColor
                         )
@@ -356,7 +351,7 @@ fun MenuScreen(
                 },
                 confirmButton = {
                     CustomButton(
-                        text = "Close",
+                        text = stringResource(R.string.tutorial_close_button),
                         onClick = { showTutorialDialog = false },
                         isLightTheme = isLightTheme,
                         modifier = Modifier

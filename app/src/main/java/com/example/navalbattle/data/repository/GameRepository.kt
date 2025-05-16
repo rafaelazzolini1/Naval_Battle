@@ -75,39 +75,6 @@ class GameRepository(
 
             Log.d(TAG, "🎯 Comparando winner=$winner com userId=$userId")
 
-            // Envio do e-mail se o jogador for o vencedor
-            if (winner === "Player") {
-                val json = """
-                    {
-                      "to": "$userEmail",
-                      "subject": "Parabéns! Você venceu o Naval Battle!",
-                      "html": "<h2>Você venceu!</h2><p>Pontuação: $winnerScore</p><p>Total de movimentos: $totalMoves</p>"
-                    }
-                """.trimIndent()
-
-                val client = OkHttpClient()
-                val requestBody = RequestBody.create(
-                    "application/json".toMediaTypeOrNull(),
-                    json
-                )
-
-                val request = Request.Builder()
-                    .url("https://naval-battle-xxsc.onrender.com/send-email")
-                    .post(requestBody)
-                    .addHeader("Content-Type", "application/json")
-                    .build()
-
-                client.newCall(request).enqueue(object : Callback {
-                    override fun onFailure(call: Call, e: IOException) {
-                        Log.e(TAG, "Erro ao enviar e-mail: ${e.message}", e)
-                    }
-
-                    override fun onResponse(call: Call, response: Response) {
-                        Log.d(TAG, "Resposta do envio de e-mail: ${response.code}")
-                    }
-                })
-            }
-
             val gameData = hashMapOf(
                 "winner" to (winner ?: "None"),
                 "winnerScore" to winnerScore,

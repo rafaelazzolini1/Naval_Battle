@@ -52,4 +52,31 @@
     <string name="game_ship_destroyer">Destructor</string>
     <string name="game_error_saving_game">Error al guardar el juego</string>
     <string name="game_error_user_not_authenticated">¡Usuario no autenticado!</string>
+
+    <!-- Novas strings para GameRepository.kt -->
+    <string name="email_subject_victory">¡Felicidades! ¡Has ganado la Batalla Naval!</string>
+    <string name="email_body_victory"><h2>¡Has ganado!</h2><p>Puntuación: %1$d</p><p>Total de movimientos: %2$d</p></string>
+
+    <!-- Novas strings para Menu.kt --><string name="menu_game_settings">Configuración del juego</string>
+    <string name="menu_number_of_mines">Número de minas (1-10)</string>
+    <string name="menu_default_mines">Por defecto: 5 minas</string>
+    <string name="menu_timer_duration">Duración del temporizador (1-10 segundos)</string>
+    <string name="menu_default_timer">Por defecto: 7 segundos</string>
+    <string name="menu_start_game">Iniciar juego</string>
+    <string name="menu_how_to_play">Cómo jugar</string>
+    <string name="menu_logout">Cerrar sesión</string>
+    <string name="tutorial_title">Cómo jugar a Batalla Naval</string>
+    <string name="tutorial_objective_title">Objetivo:</string>
+    <string name="tutorial_objective_text">¡Hunde todos los barcos enemigos antes de que hundan los tuyos o pises una mina!</string>
+    <string name="tutorial_gameplay_title">Modo de juego:</string>
+    <string name="tutorial_gameplay_text">- El juego se juega en una cuadrícula de 10x10.\n- Tú y la IA se turnan para seleccionar celdas.\n- Cada turno tiene un temporizador (7 segundos por defecto). Si se agota el tiempo, se selecciona una celda al azar.\n- Las celdas pueden contener barcos, minas o estar vacías.</string>
+    <string name="tutorial_cell_types_title">Tipos de celda:</string>
+    <string name="tutorial_cell_types_text">- Barco: Golpéalo para dañar los barcos enemigos. ¡Hunde todos para ganar!\n- Mina: Si tocas una mina, pierdes automáticamente.\n- Vacía: No pasa nada.</string>
+    <string name="tutorial_scoring_title">Puntuación:</string>
+    <string name="tutorial_scoring_text">- Ganas puntos por cada celda de barco golpeada.\n- El juego guarda tu progreso y envía un correo anunciando al ganador.</string>
+    <string name="tutorial_controls_title">Controles:</string>
+    <string name="tutorial_controls_text">- Toca una celda para atacar.\n- Usa el botón de pausa para detener el temporizador.\n- Puedes reiniciar o cerrar sesión desde la pantalla del juego.</string>
+    <string name="tutorial_close_button">Cerrar</string>
+
+
 </resources>

@@ -60,6 +60,8 @@ import com.naval.battle.ui.component.CustomButton
 import com.naval.battle.ui.component.GameBoard
 import kotlinx.coroutines.delay
 import kotlin.random.Random
+import com.example.navalbattle.util.sendVictoryEmailIntent
+
 
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
@@ -233,8 +235,19 @@ fun GameScreen(
                     aiScore = aiScore,
                     winner = winner,
                     winnerScore = if (winner != null) (if (viewModel.gameState.value.lastSunkByPlayer) playerScore else aiScore) else 0,
-                    onSuccess = { saveStatus = "game_save_success" }, // Passa a chave como String
-                    onError = { error -> saveStatus = error } // Passa a mensagem de erro como String
+                    onSuccess = {
+                        saveStatus = "game_save_success"
+
+                        if (winner == "Player") {
+                            sendVictoryEmailIntent(
+                                context = context,
+                                userEmail = userEmail,
+                                winnerScore = if (viewModel.gameState.value.lastSunkByPlayer) playerScore else aiScore,
+                                totalMoves = viewModel.gameState.value.moves.size
+                            )
+                        }
+                    },
+                    onError = { error -> saveStatus = error }
                 )
             }
 
@@ -265,10 +278,22 @@ fun GameScreen(
                 playerScore = playerScore,
                 aiScore = aiScore,
                 winner = winner,
-                winnerScore = aiScore,
-                onSuccess = { saveStatus = "Game and moves saved successfully! A confirmation email with the winner has been sent." },
-                onError = { error -> saveStatus = "Error saving game: $error" }
+                winnerScore = if (winner != null) (if (viewModel.gameState.value.lastSunkByPlayer) playerScore else aiScore) else 0,
+                onSuccess = {
+                    saveStatus = "game_save_success"
+
+                    if (winner == "Player") {
+                        sendVictoryEmailIntent(
+                            context = context,
+                            userEmail = userEmail,
+                            winnerScore = if (viewModel.gameState.value.lastSunkByPlayer) playerScore else aiScore,
+                            totalMoves = viewModel.gameState.value.moves.size
+                        )
+                    }
+                },
+                onError = { error -> saveStatus = error }
             )
+
         }
         timeLeft = viewModel.timeLimit
     }
@@ -823,9 +848,21 @@ fun GameScreen(
                         aiScore = aiScore,
                         winner = winner,
                         winnerScore = if (winner != null) (if (viewModel.gameState.value.lastSunkByPlayer) playerScore else aiScore) else 0,
-                        onSuccess = { saveStatus = "game_save_success" }, // Passa a chave como String
-                        onError = { error -> saveStatus = error } // Passa a mensagem de erro como String
+                        onSuccess = {
+                            saveStatus = "game_save_success"
+
+                            if (winner == "Player") {
+                                sendVictoryEmailIntent(
+                                    context = context,
+                                    userEmail = userEmail,
+                                    winnerScore = if (viewModel.gameState.value.lastSunkByPlayer) playerScore else aiScore,
+                                    totalMoves = viewModel.gameState.value.moves.size
+                                )
+                            }
+                        },
+                        onError = { error -> saveStatus = error }
                     )
+
                 }
 
                 viewModel.gameState.value = viewModel.gameState.value.copy(
@@ -854,9 +891,20 @@ fun GameScreen(
                     playerScore = playerScore,
                     aiScore = aiScore,
                     winner = winner,
-                    winnerScore = playerScore,
-                    onSuccess = { saveStatus = "Game and moves saved successfully! A confirmation email with the winner has been sent." },
-                    onError = { error -> saveStatus = "Error saving game: $error" }
+                    winnerScore = if (winner != null) (if (viewModel.gameState.value.lastSunkByPlayer) playerScore else aiScore) else 0,
+                    onSuccess = {
+                        saveStatus = "game_save_success"
+
+                        if (winner == "Player") {
+                            sendVictoryEmailIntent(
+                                context = context,
+                                userEmail = userEmail,
+                                winnerScore = if (viewModel.gameState.value.lastSunkByPlayer) playerScore else aiScore,
+                                totalMoves = viewModel.gameState.value.moves.size
+                            )
+                        }
+                    },
+                    onError = { error -> saveStatus = error }
                 )
             } else {
                 newBoard[row][col] = CellState.MISS

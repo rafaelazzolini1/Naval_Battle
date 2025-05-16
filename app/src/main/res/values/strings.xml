@@ -52,6 +52,30 @@
     <string name="game_error_saving_game">Error saving game</string>
     <string name="game_error_user_not_authenticated">User not authenticated!</string>
 
+    <!-- Novas strings para GameRepository.kt -->
+    <string name="email_subject_victory">¡Felicidades! ¡Has ganado la Batalla Naval!</string>
+    <string name="email_body_victory"><h2>You won!</h2><p>Score: %1$d</p><p>Total moves: %2$d</p></string>
 
+    <!-- Novas strings para Menu.kt -->
+    <string name="menu_game_settings">Game Settings</string>
+    <string name="menu_number_of_mines">Number of Mines (1-10)</string>
+    <string name="menu_default_mines">Default: 5 mines</string>
+    <string name="menu_timer_duration">Timer Duration (1-10 seconds)</string>
+    <string name="menu_default_timer">Default: 7 seconds</string>
+    <string name="menu_start_game">Start Game</string>
+    <string name="menu_how_to_play">How to Play</string>
+    <string name="menu_logout">Log Out</string>
+    <string name="tutorial_title">How to Play Naval Battle</string>
+    <string name="tutorial_objective_title">Objective:</string>
+    <string name="tutorial_objective_text">Sink all enemy ships before they sink yours or you hit a mine!</string>
+    <string name="tutorial_gameplay_title">Gameplay:</string>
+    <string name="tutorial_gameplay_text">- The game is played on a 10x10 grid.\n- You and the AI take turns selecting grid cells.\n- Each turn has a timer (default 7 seconds). If time runs out, a random cell is chosen.\n- Cells can contain ships, mines, or be empty.</string>
+    <string name="tutorial_cell_types_title">Cell Types:</string>
+    <string name="tutorial_cell_types_text">- Ship: Hit to damage enemy ships. Sink all to win!\n- Mine: Hitting a mine ends the game with your loss.\n- Empty: Results in a miss, no effect.</string>
+    <string name="tutorial_scoring_title">Scoring:</string>
+    <string name="tutorial_scoring_text">- Earn points for each ship cell hit.\n- The game saves your progress and sends a winner announcement email.</string>
+    <string name="tutorial_controls_title">Controls:</string>
+    <string name="tutorial_controls_text">- Tap a grid cell to attack.\n- Use the Pause button to pause the timer.\n- Restart or log out from the game screen.</string>
+    <string name="tutorial_close_button">Close</string>
 
 </resources>
