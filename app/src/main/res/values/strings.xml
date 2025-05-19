@@ -53,7 +53,7 @@
     <string name="game_error_user_not_authenticated">User not authenticated!</string>
 
     <!-- Novas strings para GameRepository.kt -->
-    <string name="email_subject_victory">¡Felicidades! ¡Has ganado la Batalla Naval!</string>
+    <string name="email_subject_victory">¡Congratulations! ¡You won the Battle Ship!</string>
     <string name="email_body_victory"><h2>You won!</h2><p>Score: %1$d</p><p>Total moves: %2$d</p></string>
 
     <!-- Novas strings para Menu.kt -->
