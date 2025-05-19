@@ -236,7 +236,7 @@ fun GameScreen(
                     winner = winner,
                     winnerScore = if (winner != null) (if (viewModel.gameState.value.lastSunkByPlayer) playerScore else aiScore) else 0,
                     onSuccess = {
-                        saveStatus = "game_save_success"
+                        saveStatus = context.getString(R.string.game_save_success)
 
                         if (winner == "Player") {
                             sendVictoryEmailIntent(
@@ -280,7 +280,7 @@ fun GameScreen(
                 winner = winner,
                 winnerScore = if (winner != null) (if (viewModel.gameState.value.lastSunkByPlayer) playerScore else aiScore) else 0,
                 onSuccess = {
-                    saveStatus = "game_save_success"
+                    saveStatus = context.getString(R.string.game_save_success)
 
                     if (winner == "Player") {
                         sendVictoryEmailIntent(
@@ -849,7 +849,7 @@ fun GameScreen(
                         winner = winner,
                         winnerScore = if (winner != null) (if (viewModel.gameState.value.lastSunkByPlayer) playerScore else aiScore) else 0,
                         onSuccess = {
-                            saveStatus = "game_save_success"
+                            saveStatus = context.getString(R.string.game_save_success)
 
                             if (winner == "Player") {
                                 sendVictoryEmailIntent(
@@ -893,7 +893,7 @@ fun GameScreen(
                     winner = winner,
                     winnerScore = if (winner != null) (if (viewModel.gameState.value.lastSunkByPlayer) playerScore else aiScore) else 0,
                     onSuccess = {
-                        saveStatus = "game_save_success"
+                        saveStatus = context.getString(R.string.game_save_success)
 
                         if (winner == "Player") {
                             sendVictoryEmailIntent(

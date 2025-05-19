@@ -38,7 +38,7 @@
     <string name="game_defeat_message">The AI has prevailed, sinking all your ships with %1$d points!</string>
     <string name="game_defeat_by_mine_message">Oh no! You hit a mine and lost the battle. The AI wins with %1$d points!</string>
     <string name="game_victory_by_mine_message">The AI triggered a mine! You win with %1$d points!</string>
-    <string name="game_save_success">Game and moves saved successfully! A confirmation email with the winner has been sent.</string>
+    <string name="game_save_success">Game and moves saved successfully! A confirmation email with the winner will be send now.</string>
     <string name="game_save_error">Error saving game:</string>
     <string name="game_dialog_logout">Log Out</string>
     <string name="game_dialog_restart">Restart</string>

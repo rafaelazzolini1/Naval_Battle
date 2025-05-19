@@ -39,7 +39,7 @@
     <string name="game_defeat_message">La IA ha prevalecido, hundiendo todos tus barcos con %1$d puntos.</string>
     <string name="game_defeat_by_mine_message">¡Oh no! Golpeaste una mina y perdiste la batalla. La IA gana con %1$d puntos.</string>
     <string name="game_victory_by_mine_message">¡La IA activó una mina! Ganaste con %1$d puntos.</string>
-    <string name="game_save_success">¡Juego y movimientos guardados con éxito! Se ha enviado un correo de confirmación con el ganador.</string>
+    <string name="game_save_success">¡Juego y movimientos guardados con éxito! Será enviado ahora un correo de confirmación con el ganador.</string>
     <string name="game_save_error">Error al guardar el juego:</string>
     <string name="game_dialog_logout">Cerrar sesión</string>
     <string name="game_dialog_restart">Reiniciar</string>
