@@ -1,81 +1,81 @@
 # Naval Battle
 
-Aplicació Android multiusuari inspirada en el clàssic joc de batalla naval, desenvolupada amb **Jetpack Compose** i **Firebase**. Inclou funcionalitats avançades com **mines interactives**, **control de temps**, **temes dinàmics** i **suport multilingüe**.
+An Android multiplayer application inspired by the classic battleship game, developed using **Jetpack Compose** and **Firebase**. Features include **interactive mines**, **turn timer**, **dynamic themes**, and **multilingual support**.
 
-## 📱 Plataforma
+## 📱 Platform
 
-- Android amb Jetpack Compose
-- Firebase Authentication, Realtime Database i Firestore
+- Android with Jetpack Compose
+- Firebase Authentication, Realtime Database, and Firestore
 
-## 🎯 Objectiu del Projecte
+## 🎯 Project Objective
 
-Durant la fase de **Construcció**, l’objectiu principal ha estat lliurar una aplicació funcional amb una experiència d’usuari optimitzada, suportant:
-- Temes dinàmics (llum/fosc segons sensors de llum)
-- Interacció sensorial (so i vibració)
-- Navegació clara i escalable
-- Traducció completa al **castellà** i **anglès**
+During the **Construction** phase, the main goal was to deliver a functional application with an optimized user experience, supporting:
+- Dynamic themes (light/dark based on ambient light sensor)
+- Sensory interaction (sound and vibration)
+- Scalable navigation
+- Full translation to **Spanish** and **English**
 
 ---
 
-## 🧩 Decisions Tècniques
+## 🧩 Technical Decisions
 
 ### Frontend
 
-#### 🔀 Navegació
-- Gestionada amb `NavHost` i `NavController`
-- Integració amb `ViewModels`: `LoginViewModel`, `MenuViewModel`, `GameViewModel`
+#### 🔀 Navigation
+- Managed with `NavHost` and `NavController`
+- Integrated with `ViewModels`: `LoginViewModel`, `MenuViewModel`, `GameViewModel`
 
 #### 🧱 Components
-- Components reutilitzables (`CustomButton`, `CustomTextField`, `GameBoard`)
-- Suport a temes dinàmics (`isLightTheme`), animacions i responsivitat
+- Reusable components (`CustomButton`, `CustomTextField`, `GameBoard`)
+- Support for dynamic themes (`isLightTheme`), animations, and responsive layouts
 
-#### 🖼️ Pantalles
-- `LoginScreen`: inici de sessió, registre, restabliment, feedback d’errors
-- `MenuScreen`: configuració de mines (1-10) i temps (1-10s), tutorial
-- `GameScreen`: tauler, temporitzador (`LaunchedEffect`), so, vibració, fi de partida
+#### 🖼️ Screens
+- `LoginScreen`: login, registration, password reset, error feedback
+- `MenuScreen`: mine (1-10) and time (1-10s) configuration, tutorial
+- `GameScreen`: game board, turn timer (`LaunchedEffect`), sound, vibration, end game dialog
 
-#### 🌗 Tema Dinàmic
-- `NavalBattleTheme` + `LightSensorManager` per detectar lux ambientals
-- Canvi automàtic o manual entre mode clar/fosc
+#### 🌗 Dynamic Theme
+- `NavalBattleTheme` + `LightSensorManager` to detect ambient lux
+- Auto and manual switching between light and dark modes
 
 ---
 
 ### Backend (Firebase)
 
-#### 🔐 Autenticació
-- Inici de sessió amb email/contrasenya i Google
-- Verificació per correu i restabliment de contrasenya
+#### 🔐 Authentication
+- Login with email/password and Google
+- Email verification and password reset
 
-#### 💾 Emmagatzematge
-- Jugades en `Realtime Database`
-- Resultats resumits a `Firestore` amb `UUID` per a cada partida
-
----
-
-## 🔧 Millores Realitzades
-
-- ⏱️ Control de temps ajustable entre torns
-- 💣 Mines integrades amb efectes visuals i sonors
-- 🎨 UX enriquida amb sons, vibració i adaptació temàtica dinàmica
-- 🌍 Traducció completa de totes les cadenes (**strings**) a **anglès** i **castellà**
+#### 💾 Storage
+- Moves stored in `Realtime Database`
+- Game summaries stored in `Firestore` using a unique `UUID` match ID
 
 ---
 
-## 🏁 Estat Actual
+## 🔧 Improvements Implemented
 
-✔️ Fase de Construcció completada  
-📦 Preparat per a integració i proves finals
+- ⏱️ Adjustable turn timer
+- 💣 Mines integrated into game logic with visual and sound effects
+- 🎨 Enhanced UX through sound, vibration, and theme adaptation
+- 🌍 Full string translation to **English** and **Spanish**
 
 ---
 
-## 📍 Desenvolupadors
+## 🏁 Current Status
+
+✔️ Construction phase completed  
+📦 Ready for integration and final testing
+
+---
+
+## 📍 Developers
 
 - Rafael Azzolini  
 - Raphael Augusto Santos
 
 ---
 
-## 📅 Localització
+## 📅 Location
 
-Lleida, Catalunya  
+Lleida, Catalonia  
 2025
